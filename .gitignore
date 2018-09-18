@@ -6,6 +6,7 @@
 *.dylib
 
 main
+json-filter
 
 # Test binary, build with `go test -c`
 *.test
