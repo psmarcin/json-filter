@@ -1,5 +1,5 @@
 FROM golang:1.11-alpine3.8 as build
-WORKDIR /app
+WORKDIR /go/src/github.com/psmarcin/json-filter/
 COPY . .
 RUN ./make
 
