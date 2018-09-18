@@ -1,3 +1,3 @@
 #!/bin/sh
 
-go build ./src/main.go
+go build ./main.go
