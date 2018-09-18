@@ -1,0 +1,5 @@
+#!/bin/sh
+
+now
+now alias json-filter.psmarcin.me
+now rm json-filter --safe --yes
