@@ -6,6 +6,6 @@ RUN ./make
 
 FROM alpine:3.7
 WORKDIR /app
-COPY --from=build /app /app/
+COPY --from=build /go/src/github.com/psmarcin/json-filter /app/
 EXPOSE 8080
 CMD ["./run"]
