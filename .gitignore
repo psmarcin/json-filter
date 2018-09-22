@@ -6,7 +6,7 @@
 *.dylib
 
 main
-json-filter
+youtubeGoesPodcast
 
 # Test binary, build with `go test -c`
 *.test

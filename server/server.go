@@ -2,10 +2,14 @@ package server
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/psmarcin/youtubeGoesPodcast/feed"
+	"github.com/psmarcin/youtubeGoesPodcast/iTunes"
 )
 
 var port = ":8080"
@@ -28,29 +32,59 @@ var rootStatus = Status{
 
 const ERR500 = "Internal Error"
 
-func handler(w http.ResponseWriter, r *http.Request) {
+func errorResponse(e error, w http.ResponseWriter) {
+	err := Error{
+		IsError:      true,
+		Timestamp:    time.Now(),
+		ErrorMessage: string(e.Error()),
+	}
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusBadRequest)
+	resJSON, _ := json.Marshal(err)
+	fmt.Fprint(w, string(resJSON))
+}
+
+func jsonResponse(b []byte, w http.ResponseWriter) {
+	w.Header().Set("Content-Type", "application/json")
+	s := string(b)
+	log.Printf("[Response] %v", s)
+	fmt.Fprintf(w, s)
+}
+
+func xmlResponse(b []byte, w http.ResponseWriter) {
+	w.Header().Set("Content-Type", "text/xml; charset=UTF-8")
+	s := `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd">
+` + string(b)
+	fmt.Fprintf(w, s)
+}
+
+func handler(w http.ResponseWriter, r *http.Request) {
 	resJSON, err := json.Marshal(rootStatus)
 	if err != nil {
-		error := Error{
-			IsError:      true,
-			Timestamp:    time.Now(),
-			ErrorMessage: string(err.Error()),
-		}
-		w.WriteHeader(http.StatusBadRequest)
-		w.Header().Set("content-type", "application/json")
-		resJSON, _ := json.Marshal(error)
-		fmt.Fprint(w, string(resJSON))
-		log.Printf("Error parsing json %v", err)
+		errorResponse(err, w)
 		return
 	}
-	log.Printf("Request %v", rootStatus)
+	jsonResponse(resJSON, w)
+}
 
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, string(resJSON))
+func feedHandler(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+	channelID, ok := r.Form["channelId"]
+	log.Printf("[Request] [%s] %s %s %s", r.Method, r.URL.RequestURI(), r.RemoteAddr, r.UserAgent())
+	if !ok {
+		err := errors.New("You need to provide channel id as query param 'channelId'")
+		errorResponse(err, w)
+		return
+	}
+
+	youtubeFeed := feed.Create(channelID[0])
+	iTunesFeed := iTunes.Create(youtubeFeed)
+	xmlResponse(iTunesFeed.ToXML(), w)
 }
 
 func Start() {
+	http.HandleFunc("/feed", feedHandler)
 	http.HandleFunc("/", handler)
 
 	log.Printf("Starting server at %v", port)
