@@ -8,7 +8,8 @@ import (
 	"net/http"
 	"time"
 
-	youtube "github.com/psmarcin/youtubeGoesPodcast/youtube"
+	"github.com/psmarcin/youtubeGoesPodcast/feed"
+	"github.com/psmarcin/youtubeGoesPodcast/iTunes"
 )
 
 var port = ":8080"
@@ -53,7 +54,7 @@ func jsonResponse(b []byte, w http.ResponseWriter) {
 func xmlResponse(b []byte, w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "text/xml; charset=UTF-8")
 	s := `<?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet type="text/xsl" media="screen" href="/~d/styles/rss2enclosuresfull.xsl"?><?xml-stylesheet type="text/css" media="screen" href="http://feeds.serialpodcast.org/~d/styles/itemcontent.css"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:feedburner="http://rssnamespace.org/feedburner/ext/1.0" version="2.0" xml:base="https://serialpodcast.org">
+<rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd">
 ` + string(b)
 	// log.Printf("[Response] %v", s)
 	fmt.Fprintf(w, s)
@@ -63,29 +64,23 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	resJSON, err := json.Marshal(rootStatus)
 	if err != nil {
 		errorResponse(err, w)
+		return
 	}
-
-	w.WriteHeader(http.StatusOK)
 	jsonResponse(resJSON, w)
 }
 
 func feedHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	channelID, ok := r.Form["channelId"]
-	if ok != true {
-		err := errors.New("Please provide channel id as 'channelId' query string")
+	if !ok {
+		err := errors.New("You need to provide channel id as query param 'channelId'")
 		errorResponse(err, w)
 		return
 	}
 
-	channel := youtube.CreateChannel(channelID[0])
-	channel.GetVideos()
-	channel.GenerateITunes()
-	xml, err := channel.ToXML()
-	if err != nil {
-		errorResponse(err, w)
-	}
-	xmlResponse(xml, w)
+	youtubeFeed := feed.Create(channelID[0])
+	iTunesFeed := iTunes.Create(youtubeFeed)
+	xmlResponse(iTunesFeed.ToXML(), w)
 }
 
 func Start() {

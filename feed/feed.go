@@ -8,19 +8,23 @@ import (
 )
 
 type Feed struct {
-	Author string  `xml:"author>name"`
-	Link   Link    `xml:"link"`
-	Feeds  []Entry `xml:"entry"`
+	Author    string  `xml:"author>name"`
+	Link      Link    `xml:"link"`
+	ChannelID string  `xml:"channelId"`
+	Published string  `xml:"published"`
+	Feeds     []Entry `xml:"entry"`
+	Title     string  `xml:"title"`
 }
 
 type Entry struct {
 	ID          string `xml:"id"`
-	YTID        string `xml:"yt:videoId"`
-	YTChannelID string `xml:"yt:channelId"`
+	YTID        string `xml:"videoId"`
+	YTChannelID string `xml:"channelId"`
 	Title       string `xml:"title"`
 	Link        Link   `xml:"link"`
 	Author      string `xml:"author>name"`
 	Published   string `xml:"published"`
+	Description string `xml:"group>description"`
 }
 
 type Link struct {
@@ -28,7 +32,7 @@ type Link struct {
 	Rel  string `xml:"rel,attr"`
 }
 
-func Get(channelId string) Feed {
+func Create(channelId string) Feed {
 	url := "https://www.youtube.com/feeds/videos.xml?channel_id=" + channelId
 	res, err := http.Get(url)
 	if err != nil {
@@ -46,6 +50,6 @@ func Get(channelId string) Feed {
 
 func parse(s []byte) Feed {
 	feed := Feed{}
-	xml.Unmarshal([]byte(s), &feed)
+	xml.Unmarshal(s, &feed)
 	return feed
 }
