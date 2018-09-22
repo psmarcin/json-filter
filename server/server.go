@@ -56,7 +56,6 @@ func xmlResponse(b []byte, w http.ResponseWriter) {
 	s := `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd">
 ` + string(b)
-	// log.Printf("[Response] %v", s)
 	fmt.Fprintf(w, s)
 }
 
@@ -72,6 +71,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 func feedHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	channelID, ok := r.Form["channelId"]
+	log.Printf("[Request] [%s] %s %s %s", r.Method, r.URL.RequestURI(), r.RemoteAddr, r.UserAgent())
 	if !ok {
 		err := errors.New("You need to provide channel id as query param 'channelId'")
 		errorResponse(err, w)
