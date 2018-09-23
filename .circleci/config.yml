@@ -6,17 +6,24 @@ version: 2
 
 
 jobs:
-  build:
+  tests: 
     docker:
-      # specify the version
       - image: circleci/golang:1.11-node
     working_directory: /go/src/github.com/psmarcin/youtubeGoesPodcast
     steps:
       - checkout
       - run: go get -v -t -d ./...
       - run: go test -v ./...
+  build:
+    filters:
+      branches:
+        only:
+          - master
+    docker:
+      # specify the version
+      - image: circleci/golang:1.11-node
+    working_directory: /go/src/github.com/psmarcin/youtubeGoesPodcast
+    steps:
+      - checkout
       - run: sudo yarn global add now
-      - run: now -v
-      - run: echo $NOWSHTOKEN
-      - run: echo ${NOWSHTOKEN}
       - run: ./deploy-ci.sh
