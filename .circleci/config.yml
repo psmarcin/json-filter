@@ -3,7 +3,7 @@
 # Check https://circleci.com/docs/2.0/language-go/ for more details
 version: 2
 jobs:
-  test:
+  build:
     docker:
       # specify the version
       - image: circleci/golang:1.11
@@ -12,11 +12,5 @@ jobs:
       - checkout
       - run: go get -v -t -d ./...
       - run: go test -v ./...
-  deploy:
-    docker:
-      - image: circleci/golang:1.11
-    working_directory: /go/src/github.com/psmarcin/youtubeGoesPodcast
-    steps:
-      - checkout
       - run: yarn global add now
       - run: ./deploy-ci.sh
