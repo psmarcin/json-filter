@@ -17,6 +17,6 @@ jobs:
       - run: go test -v ./...
       - run: sudo yarn global add now
       - run: now -v
-      - run: echo $NOWSH_TOKEN
-      - run: echo ${NOWSH_TOKEN}
+      - run: echo $NOWSHTOKEN
+      - run: echo ${NOWSHTOKEN}
       - run: ./deploy-ci.sh
