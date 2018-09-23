@@ -2,4 +2,4 @@
 
 now
 now alias podcasts.psmarcin.me
-now rm podcasts --safe --yes
+now rm podcasts --safe --yes 
