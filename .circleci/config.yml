@@ -12,5 +12,5 @@ jobs:
       - checkout
       - run: go get -v -t -d ./...
       - run: go test -v ./...
-      - run: yarn global add now
+      - run: npm install -g now
       - run: ./deploy-ci.sh
