@@ -5,6 +5,9 @@
   "features": {
     "cloud": "v2"
   },
+  "env":{
+    "PS_GOOGLE_API": "@ps_google_api"
+  },
   "scale": {
     "bru1": {
       "min": 0,
