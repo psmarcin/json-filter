@@ -51,6 +51,7 @@ var token = os.Getenv("ps_google_api")
 
 func (y *YouTube) GetChannel() Channel {
 	url := youTubeAPI + y.ID + "&key=" + token
+	log.Printf("[GET] [GET CHANNELS] %s %s", url, token)
 	resp, err := http.Get(url)
 	if err != nil {
 		log.Fatal("[GET CHANNELS] Error", err)
