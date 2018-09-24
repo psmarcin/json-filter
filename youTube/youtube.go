@@ -47,7 +47,7 @@ type ChannelSnippet struct {
 	} `json:"thumbnails"`
 }
 
-var token = os.Getenv("PS_GOOGLE_API")
+var token = os.Getenv("ps_google_api")
 
 func (y *YouTube) GetChannel() Channel {
 	url := youTubeAPI + y.ID + "&key=" + token
