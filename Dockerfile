@@ -1,11 +1,12 @@
-FROM golang:1.11-alpine3.8 as build
+FROM golang:1.11-alpine as base
 WORKDIR /go/src/github.com/psmarcin/youtubeGoesPodcast/
 COPY . .
 RUN ./make.sh
 
 
-FROM alpine:3.7
-WORKDIR /app
-COPY --from=build /go/src/github.com/psmarcin/youtubeGoesPodcast /app/
+FROM alpine
+RUN apk update && apk add ca-certificates && rm -rf /var/cache/apk/*
+RUN update-ca-certificates
+COPY --from=base /go/src/github.com/psmarcin/youtubeGoesPodcast/main /
 EXPOSE 8080
-CMD ["./run.sh"]
+CMD ["/main"]
