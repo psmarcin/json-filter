@@ -17,20 +17,24 @@ type Feed struct {
 	Copyright   string   `xml:"copyright"`
 	XMLName     xml.Name `xml:"channel"`
 	PubDate     string   `xml:"pubDate"`
-	Item        []Item   `xml:"item"`
+	Image       struct {
+		Href string `xml:"href,attr"`
+	} `xml:"itunes:image"`
+	Item []Item `xml:"item"`
 }
 
 type Item struct {
 	Title       string `xml:"title"`
-	Subtitle    string `xml:"itines:subtitle"`
 	ITitle      string `xml:"itunes:title"`
+	Subtitle    string `xml:"itines:subtitle"`
+	Description string `xml:"description"`
 	Author      string `xml:"itunes:author"`
 	Link        string `xml:"link"`
-	Description string `xml:"description"`
 	PubDate     string `xml:"pubDate"`
 	Enclosure   struct {
-		URL  string `xml:"url,attr"`
-		Type string `xml:"type,attr"`
+		URL    string `xml:"url,attr"`
+		Type   string `xml:"type,attr"`
+		Length int    `xml:"length,attr"`
 	} `xml:"enclosure"`
 	Image struct {
 		Href string `xml:"href,attr"`
@@ -48,11 +52,13 @@ func (f *Feed) ToXML() []byte {
 
 func Create(f feed.Feed) Feed {
 	feed := Feed{
-		Author:  f.Title,
-		Title:   f.Title,
-		Link:    f.Link.Href,
-		PubDate: f.Published,
+		Author:      f.Title,
+		Title:       f.Title,
+		Link:        f.Link.Href,
+		PubDate:     f.Published,
+		Description: f.ChannelDetails.Snippet.Description,
 	}
+	feed.Image.Href = f.ChannelDetails.Snippet.Thumbnails.High.URL
 	items := []Item{}
 	for _, v := range f.Feeds {
 		item := Item{
@@ -66,6 +72,8 @@ func Create(f feed.Feed) Feed {
 		}
 		item.Image.Href = "https://i.ytimg.com/vi/" + v.YTID + "/maxresdefault.jpg"
 		item.Enclosure.URL = "http://podsync.net/download/PNyUU6D62/" + v.YTID + ".mp4"
+		item.Enclosure.Type = "video/mp4"
+		item.Enclosure.Length = 1000
 		items = append(items, item)
 	}
 	feed.Item = items

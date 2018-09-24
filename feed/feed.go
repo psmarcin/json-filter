@@ -5,15 +5,20 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+
+	"github.com/psmarcin/youtubeGoesPodcast/youTube"
 )
 
+var feedURL = "https://www.youtube.com/feeds/videos.xml?channel_id="
+
 type Feed struct {
-	Author    string  `xml:"author>name"`
-	Link      Link    `xml:"link"`
-	ChannelID string  `xml:"channelId"`
-	Published string  `xml:"published"`
-	Feeds     []Entry `xml:"entry"`
-	Title     string  `xml:"title"`
+	Author         string  `xml:"author>name"`
+	Link           Link    `xml:"link"`
+	ChannelID      string  `xml:"channelId"`
+	Published      string  `xml:"published"`
+	Feeds          []Entry `xml:"entry"`
+	Title          string  `xml:"title"`
+	ChannelDetails youTube.Channel
 }
 
 type Entry struct {
@@ -32,8 +37,16 @@ type Link struct {
 	Rel  string `xml:"rel,attr"`
 }
 
+func (f *Feed) getChannelDetails() {
+	yt := youTube.YouTube{
+		ID: f.ChannelID,
+	}
+
+	f.ChannelDetails = yt.GetChannel()
+}
+
 func Create(channelId string) Feed {
-	url := "https://www.youtube.com/feeds/videos.xml?channel_id=" + channelId
+	url := feedURL + channelId
 	res, err := http.Get(url)
 	if err != nil {
 		log.Fatal(err)
@@ -51,5 +64,6 @@ func Create(channelId string) Feed {
 func parse(s []byte) Feed {
 	feed := Feed{}
 	xml.Unmarshal(s, &feed)
+	feed.getChannelDetails()
 	return feed
 }
