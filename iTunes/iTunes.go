@@ -17,7 +17,10 @@ type Feed struct {
 	Copyright   string   `xml:"copyright"`
 	XMLName     xml.Name `xml:"channel"`
 	PubDate     string   `xml:"pubDate"`
-	Item        []Item   `xml:"item"`
+	Image       struct {
+		Href string `xml:"href,attr"`
+	} `xml:"itunes:image"`
+	Item []Item `xml:"item"`
 }
 
 type Item struct {
@@ -49,11 +52,13 @@ func (f *Feed) ToXML() []byte {
 
 func Create(f feed.Feed) Feed {
 	feed := Feed{
-		Author:  f.Title,
-		Title:   f.Title,
-		Link:    f.Link.Href,
-		PubDate: f.Published,
+		Author:      f.Title,
+		Title:       f.Title,
+		Link:        f.Link.Href,
+		PubDate:     f.Published,
+		Description: f.ChannelDetails.Snippet.Description,
 	}
+	feed.Image.Href = f.ChannelDetails.Snippet.Thumbnails.High.URL
 	items := []Item{}
 	for _, v := range f.Feeds {
 		item := Item{
