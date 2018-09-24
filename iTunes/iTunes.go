@@ -22,15 +22,16 @@ type Feed struct {
 
 type Item struct {
 	Title       string `xml:"title"`
-	Subtitle    string `xml:"itines:subtitle"`
 	ITitle      string `xml:"itunes:title"`
+	Subtitle    string `xml:"itines:subtitle"`
+	Description string `xml:"description"`
 	Author      string `xml:"itunes:author"`
 	Link        string `xml:"link"`
-	Description string `xml:"description"`
 	PubDate     string `xml:"pubDate"`
 	Enclosure   struct {
-		URL  string `xml:"url,attr"`
-		Type string `xml:"type,attr"`
+		URL    string `xml:"url,attr"`
+		Type   string `xml:"type,attr"`
+		Length int    `xml:"length,attr"`
 	} `xml:"enclosure"`
 	Image struct {
 		Href string `xml:"href,attr"`
@@ -66,6 +67,8 @@ func Create(f feed.Feed) Feed {
 		}
 		item.Image.Href = "https://i.ytimg.com/vi/" + v.YTID + "/maxresdefault.jpg"
 		item.Enclosure.URL = "http://podsync.net/download/PNyUU6D62/" + v.YTID + ".mp4"
+		item.Enclosure.Type = "video/mp4"
+		item.Enclosure.Length = 1000
 		items = append(items, item)
 	}
 	feed.Item = items
