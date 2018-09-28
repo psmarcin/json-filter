@@ -1,6 +1,5 @@
 {
-  "name": "podcast.psmarcin.me",
-  "alias": "podcast.psmarcin.me",
+  "name": "podcast",
   "type": "docker",
   "features": {
     "cloud": "v2"
