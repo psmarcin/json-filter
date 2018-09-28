@@ -1,5 +1,5 @@
 #!/bin/sh
 
 now
-now alias podcasts.psmarcin.me
-now rm podcasts --safe --yes 
+now alias podcast.psmarcin.me
+now rm podcast --safe --yes 
