@@ -2,26 +2,33 @@ package iTunes
 
 import (
 	"encoding/xml"
+	"log"
+	"time"
 
 	"github.com/psmarcin/youtubeGoesPodcast/feed"
 )
 
 type Feed struct {
-	Author      string   `xml:"itunes:author"`
-	Description string   `xml:"description"`
-	Language    string   `xml:"language"`
-	Link        string   `xml:"link"`
-	Owner       Owner    `xml:"itunes:owner"`
-	Subtitle    string   `xml:"itunes:subtitle"`
-	Title       string   `xml:"title"`
-	Copyright   string   `xml:"copyright"`
-	XMLName     xml.Name `xml:"channel"`
-	PubDate     string   `xml:"pubDate"`
-	Category    string   `xml:"category"`
-	Image       struct {
+	Title         string `xml:"title"`
+	Link          string `xml:"link"`
+	Description   string `xml:"description"`
+	Category      string `xml:"category"`
+	Generator     string `xml:"generator"`
+	Language      string `xml:"language"`
+	LastBuildDate string `xml:"lastBuildDate"`
+	PubDate       string `xml:"pubDate"`
+	Image         struct {
+		URL   string `xml:"url"`
+		Title string `xml:"title"`
+		Link  string `xml:"link"`
+	} `xml:"image"`
+	Subtitle    string `xml:"itunes:subtitle"`
+	ITunesImage struct {
 		Href string `xml:"href,attr"`
 	} `xml:"itunes:image"`
-	Item []Item `xml:"item"`
+	Author  string   `xml:"itunes:author"`
+	XMLName xml.Name `xml:"channel"`
+	Item    []Item   `xml:"item"`
 }
 
 type Item struct {
@@ -35,16 +42,14 @@ type Item struct {
 		Type   string `xml:"type,attr"`
 		Length int    `xml:"length,attr"`
 	} `xml:"enclosure"`
-	Subtitle string `xml:"itines:subtitle"`
+	Subtitle string `xml:"itunes:subtitle"`
 	Image    struct {
 		Href string `xml:"href,attr"`
 	} `xml:"itunes:image"`
-	Duration    string `xml:"itunes:duration"`
-	Order       int    `xml:"itunes:order"`
-	ITitle      string `xml:"itunes:title"`
-	Summary     string `xml:"itunes:summary"`
-	Author      string `xml:"itunes:author"`
-	EpisodeType string `xml:"itunes:episodeType"`
+	Order   int    `xml:"itunes:order"`
+	ITitle  string `xml:"itunes:title"`
+	Summary string `xml:"itunes:summary"`
+	Author  string `xml:"itunes:author"`
 }
 
 type Owner struct {
@@ -52,44 +57,55 @@ type Owner struct {
 }
 
 func (f *Feed) ToXML() []byte {
-	b, _ := xml.MarshalIndent(f, "  ", "    ")
+	b, _ := xml.MarshalIndent(f, "  ", "  ")
 	return b
 }
 
 func Create(f feed.Feed) Feed {
-	feed := Feed{
-		Author:   f.Title,
-		Title:    f.Title,
-		Link:     f.Link.Href,
-		Category: "TV",
-		Owner: Owner{
-			Email: "p@pp.pp",
-		},
-		Language:    "en-us",
-		PubDate:     f.Published,
-		Description: f.ChannelDetails.Snippet.Description,
+	pub, err := time.Parse(time.RFC3339, f.Published)
+	if err != nil {
+		log.Fatal("Time parse ", err)
 	}
-	feed.Image.Href = f.ChannelDetails.Snippet.Thumbnails.High.URL
+	feed := Feed{
+		Title:       f.Title,
+		Link:        f.Link.Href,
+		Description: f.ChannelDetails.Snippet.Description,
+		Category:    "TV",
+		Author:      f.Title,
+		Subtitle:    f.Title,
+		Generator:   "psPodcast",
+		Language:    "en-us",
+		PubDate:     pub.Format(time.RFC1123Z),
+	}
+	feed.Image.URL = f.ChannelDetails.Snippet.Thumbnails.High.URL
+	feed.Image.Title = f.Title
+	feed.Image.Link = f.Link.Href
+	feed.ITunesImage.Href = f.ChannelDetails.Snippet.Thumbnails.High.URL
 	items := []Item{}
+
 	for i, v := range f.Feeds {
+		pub, err := time.Parse(time.RFC3339, v.Published)
+		if err != nil {
+			log.Fatal("Time parse ", err)
+		}
 		item := Item{
-			Title:       v.Title,
-			ITitle:      v.Title,
-			Subtitle:    v.Title,
-			PubDate:     v.Published,
-			Author:      v.Author,
-			Link:        v.Link.Href,
-			EpisodeType: "full",
-			Duration:    "11:32",
-			Order:       i,
 			GUID:        "pspod://" + f.ChannelID + "/" + v.YTID,
+			Title:       v.Title,
+			Link:        v.Link.Href,
 			Description: v.Description,
+			PubDate:     pub.Format(time.RFC1123Z),
+			Subtitle:    v.Title,
+			Order:       i,
+			ITitle:      v.Title,
 			Summary:     v.Description,
+			Author:      v.Author,
 		}
 		item.Image.Href = "https://i.ytimg.com/vi/" + v.YTID + "/maxresdefault.jpg"
+
 		item.Enclosure.URL = "http://podsync.net/download/PNyUU6D62/" + v.YTID + ".mp4?exp=tmp"
 		item.Enclosure.Type = "video/mp4"
 		item.Enclosure.Length = 242200000
+
 		items = append(items, item)
 	}
 	feed.Item = items
