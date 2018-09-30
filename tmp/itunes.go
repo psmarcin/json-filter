@@ -1,4 +1,4 @@
-package iTunes
+package itunes
 
 import (
 	"encoding/xml"
