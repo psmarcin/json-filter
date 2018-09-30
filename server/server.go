@@ -6,13 +6,15 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
+
+	"github.com/newrelic/go-agent"
 
 	"github.com/psmarcin/youtubeGoesPodcast/feed"
 	"github.com/psmarcin/youtubeGoesPodcast/iTunes"
+	agent "github.com/psmarcin/youtubeGoesPodcast/newRelic"
 )
-
-var port = ":8080"
 
 type Status struct {
 	Ok        bool      `json:"ok"`
@@ -86,8 +88,12 @@ func feedHandler(w http.ResponseWriter, r *http.Request) {
 
 // Start creates server with fixed routes
 func Start() {
-	http.HandleFunc("/", handler)
-	http.HandleFunc("/feed", feedHandler)
+	port := ":" + os.Getenv("PORT")
+	a := agent.Init()
+	log.SetPrefix("[SERVER] ")
+
+	http.HandleFunc(newrelic.WrapHandleFunc(a, "/", handler))
+	http.HandleFunc(newrelic.WrapHandleFunc(a, "/feed", feedHandler))
 
 	log.Printf("Starting server at %v", port)
 	log.Fatal(http.ListenAndServe(port, nil))

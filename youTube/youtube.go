@@ -50,23 +50,25 @@ type ChannelSnippet struct {
 var token = os.Getenv("PS_GOOGLE_API")
 
 func (y *YouTube) GetChannel() Channel {
+	log.SetPrefix("[GET CHANNEL] ")
+
 	url := youTubeAPI + y.ID + "&key=" + token
-	log.Printf("[GET] [GET CHANNELS] %s %s", url, token)
+	log.Printf("Get %s", y.ID)
 	resp, err := http.Get(url)
 	if err != nil {
-		log.Fatal("[GET CHANNELS] Error", err)
+		log.Fatal("Error ", err)
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal("[GET CHANNELS] Error", err)
+		log.Fatal("Error ", err)
 	}
 
 	chResp := ChannelResp{}
 	err = json.Unmarshal(body, &chResp)
 	if err != nil {
-		log.Fatal("[GET CHANNELS] Error", err)
+		log.Fatal("Error ", err)
 	}
 
 	return chResp.Items[0]

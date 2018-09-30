@@ -5,7 +5,9 @@
     "cloud": "v2"
   },
   "env":{
-    "PS_GOOGLE_API": "@ps_google_api"
+    "PS_GOOGLE_API": "@ps_google_api",
+    "PS_NEWRELIC_KEY": "@ps_newrelic_key",
+    "PORT":"8080"
   },
   "scale": {
     "bru1": {
