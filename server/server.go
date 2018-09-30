@@ -11,8 +11,8 @@ import (
 
 	"github.com/newrelic/go-agent"
 
-	"github.com/psmarcin/youtubeGoesPodcast/iTunes"
-	agent "github.com/psmarcin/youtubeGoesPodcast/newRelic"
+	"github.com/psmarcin/youtubeGoesPodcast/itunes"
+	agent "github.com/psmarcin/youtubeGoesPodcast/newrelic"
 	"github.com/psmarcin/youtubeGoesPodcast/youtube"
 )
 
