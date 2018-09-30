@@ -1,12 +1,13 @@
-package iTunes
+package itunes
 
 import (
 	"encoding/xml"
-	"log"
-	"time"
 
-	"github.com/psmarcin/youtubeGoesPodcast/feed"
+	"github.com/psmarcin/youtubeGoesPodcast/youtube"
 )
+
+var YOUTUBE_VIDEO = "https://www.youtube.com/watch?v="
+var YOUTUBE_CHANNEL = "https://www.youtube.com/channel/"
 
 type Feed struct {
 	Title         string `xml:"title"`
@@ -61,48 +62,40 @@ func (f *Feed) ToXML() []byte {
 	return b
 }
 
-func Create(f feed.Feed) Feed {
-	pub, err := time.Parse(time.RFC3339, f.Published)
-	if err != nil {
-		log.Fatal("Time parse ", err)
-	}
+func Create(yt youtube.YouTube) Feed {
 	feed := Feed{
-		Title:       f.Title,
-		Link:        f.Link.Href,
-		Description: f.ChannelDetails.Snippet.Description,
+		Title:       yt.Channel.Snippet.Title,
+		Link:        YOUTUBE_CHANNEL + yt.Channel.ID,
+		Description: yt.Channel.Snippet.Description,
 		Category:    "TV",
-		Author:      f.Title,
-		Subtitle:    f.Title,
+		Author:      yt.Channel.Snippet.Title,
+		Subtitle:    yt.Channel.Snippet.Title,
 		Generator:   "psPodcast",
-		Language:    "en-us",
-		PubDate:     pub.Format(time.RFC1123Z),
+		Language:    yt.Channel.Snippet.Country,
+		PubDate:     yt.Channel.Snippet.PublishedAt,
 	}
-	feed.Image.URL = f.ChannelDetails.Snippet.Thumbnails.High.URL
-	feed.Image.Title = f.Title
-	feed.Image.Link = f.Link.Href
-	feed.ITunesImage.Href = f.ChannelDetails.Snippet.Thumbnails.High.URL
+	feed.Image.URL = yt.Channel.Snippet.Thumbnails.High.URL
+	feed.Image.Title = yt.Channel.Snippet.Title
+	feed.Image.Link = yt.Channel.ID
+	feed.ITunesImage.Href = yt.Channel.Snippet.Thumbnails.High.URL
 	items := []Item{}
 
-	for i, v := range f.Feeds {
-		pub, err := time.Parse(time.RFC3339, v.Published)
-		if err != nil {
-			log.Fatal("Time parse ", err)
-		}
+	for i, v := range yt.Videos {
 		item := Item{
-			GUID:        "pspod://" + f.ChannelID + "/" + v.YTID,
-			Title:       v.Title,
-			Link:        v.Link.Href,
-			Description: v.Description,
-			PubDate:     pub.Format(time.RFC1123Z),
-			Subtitle:    v.Title,
+			GUID:        "pspod://" + yt.Channel.ID + "/" + v.ID.VideoID,
+			Title:       v.Snippet.Title,
+			Link:        YOUTUBE_VIDEO + v.ID.VideoID,
+			Description: v.Snippet.Description,
+			PubDate:     v.Snippet.PublishedAt,
+			Subtitle:    v.Snippet.Title,
 			Order:       i,
-			ITitle:      v.Title,
-			Summary:     v.Description,
-			Author:      v.Author,
+			ITitle:      v.Snippet.Title,
+			Summary:     v.Snippet.Description,
+			Author:      yt.Channel.Snippet.Title,
 		}
-		item.Image.Href = "https://i.ytimg.com/vi/" + v.YTID + "/maxresdefault.jpg"
+		item.Image.Href = "https://i.ytimg.com/vi/" + v.ID.VideoID + "/maxresdefault.jpg"
 
-		item.Enclosure.URL = "http://podsync.net/download/PNyUU6D62/" + v.YTID + ".mp4?exp=tmp"
+		item.Enclosure.URL = "http://podsync.net/download/PNyUU6D62/" + v.ID.VideoID + ".mp4?exp=tmp"
 		item.Enclosure.Type = "video/mp4"
 		item.Enclosure.Length = 242200000
 

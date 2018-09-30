@@ -1,4 +1,4 @@
-package newRelic
+package newrelic
 
 import (
 	"log"
