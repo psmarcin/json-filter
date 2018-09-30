@@ -12,7 +12,7 @@ func Init() {
 	log.SetPrefix("[CONFIG] ")
 	err := godotenv.Load(".env")
 	if err != nil {
-		log.Fatal("Can't load env variables ", err)
+		log.Print("Can't load env variables ", err)
 	}
 
 	log.Print("PS_GOOGLE_API= ", os.Getenv("PS_GOOGLE_API"))
