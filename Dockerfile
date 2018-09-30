@@ -1,4 +1,4 @@
-FROM golang:1.11-alpine as base
+FROM golang:1.11 as base
 WORKDIR /go/src/github.com/psmarcin/youtubeGoesPodcast/
 COPY . .
 RUN go get
