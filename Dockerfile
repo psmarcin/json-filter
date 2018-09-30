@@ -1,6 +1,7 @@
 FROM golang:1.11-alpine as base
 WORKDIR /go/src/github.com/psmarcin/youtubeGoesPodcast/
 COPY . .
+RUN go get
 RUN ./make.sh
 
 

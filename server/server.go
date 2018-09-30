@@ -70,22 +70,23 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 func feedHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
-	channelID, ok := r.Form["channelId"]
+	channelID := r.FormValue("channelId")
 	log.Printf("[Request] [%s] %s %s %s", r.Method, r.URL.RequestURI(), r.RemoteAddr, r.UserAgent())
-	if !ok {
+	if channelID == "" {
 		err := errors.New("You need to provide channel id as query param 'channelId'")
 		errorResponse(err, w)
 		return
 	}
 
-	youtubeFeed := feed.Create(channelID[0])
+	youtubeFeed := feed.Create(channelID)
 	iTunesFeed := iTunes.Create(youtubeFeed)
 	xmlResponse(iTunesFeed.ToXML(), w)
 }
 
+// Start creates server with fixed routes
 func Start() {
-	http.HandleFunc("/feed", feedHandler)
 	http.HandleFunc("/", handler)
+	http.HandleFunc("/feed", feedHandler)
 
 	log.Printf("Starting server at %v", port)
 	log.Fatal(http.ListenAndServe(port, nil))
