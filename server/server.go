@@ -86,7 +86,7 @@ func feedHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	youtubeFeed := youtube.Create(channelID)
-	iTunesFeed := iTunes.Create(youtubeFeed)
+	iTunesFeed := itunes.Create(youtubeFeed)
 	xmlResponse(iTunesFeed.ToXML(), w)
 }
 
