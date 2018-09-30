@@ -11,9 +11,9 @@ import (
 
 	"github.com/newrelic/go-agent"
 
-	"github.com/psmarcin/youtubeGoesPodcast/feed"
 	"github.com/psmarcin/youtubeGoesPodcast/iTunes"
 	agent "github.com/psmarcin/youtubeGoesPodcast/newRelic"
+	"github.com/psmarcin/youtubeGoesPodcast/youtube"
 )
 
 type Status struct {
@@ -47,9 +47,11 @@ func errorResponse(e error, w http.ResponseWriter) {
 }
 
 func jsonResponse(b []byte, w http.ResponseWriter) {
+
+	log.SetPrefix("[JSON] ")
 	w.Header().Set("Content-Type", "application/json")
 	s := string(b)
-	log.Printf("[Response] %v", s)
+	log.Printf("Response %v", s)
 	fmt.Fprintf(w, s)
 }
 
@@ -63,6 +65,8 @@ func xmlResponse(b []byte, w http.ResponseWriter) {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
+
+	log.SetPrefix("[ROOT] ")
 	resJSON, err := json.Marshal(rootStatus)
 	if err != nil {
 		errorResponse(err, w)
@@ -74,14 +78,14 @@ func handler(w http.ResponseWriter, r *http.Request) {
 func feedHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	channelID := r.FormValue("channelId")
-	log.Printf("[Request] [%s] %s %s %s", r.Method, r.URL.RequestURI(), r.RemoteAddr, r.UserAgent())
+	log.SetPrefix("[FEED] ")
+	log.Printf("Request [%s] %s %s %s", r.Method, r.URL.RequestURI(), r.RemoteAddr, r.UserAgent())
 	if channelID == "" {
 		err := errors.New("You need to provide channel id as query param 'channelId'")
 		errorResponse(err, w)
 		return
 	}
-
-	youtubeFeed := feed.Create(channelID)
+	youtubeFeed := youtube.Create(channelID)
 	iTunesFeed := iTunes.Create(youtubeFeed)
 	xmlResponse(iTunesFeed.ToXML(), w)
 }
