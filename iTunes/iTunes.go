@@ -67,14 +67,8 @@ func Create(f feed.Feed) Feed {
 		log.Fatal("Time parse ", err)
 	}
 	feed := Feed{
-		Author:      f.Title,
 		Title:       f.Title,
-		Subtitle:    f.Title,
 		Link:        f.Link.Href,
-		Category:    "TV",
-		Generator:   "psPodcast",
-		Language:    "en-us",
-		PubDate:     pub.Format(time.RFC1123Z),
 		Description: f.ChannelDetails.Snippet.Description,
 		Category:    "TV",
 		Author:      f.Title,
@@ -94,20 +88,10 @@ func Create(f feed.Feed) Feed {
 		if err != nil {
 			log.Fatal("Time parse ", err)
 		}
-		pubString := pub.Format(time.RFC1123Z)
 		item := Item{
 			GUID:        "pspod://" + f.ChannelID + "/" + v.YTID,
 			Title:       v.Title,
-			ITitle:      v.Title,
-			Subtitle:    v.Title,
-			PubDate:     pubString,
-			Author:      v.Author,
 			Link:        v.Link.Href,
-			EpisodeType: "full",
-			Duration:    "11:32",
-			Order:       i,
-			// GUID:        "pspod://" + f.ChannelID + "/" + v.YTID,
-			GUID:        "http://podsync.net/download/PNyUU6D62/" + v.YTID + ".mp4?exp=tmp",
 			Description: v.Description,
 			PubDate:     pub.Format(time.RFC1123Z),
 			Subtitle:    v.Title,
