@@ -15,6 +15,15 @@ func Init() {
 		log.Print("Can't load env variables ", err)
 	}
 
+	// if loacl load developmemnt config
+	if os.Getenv("NOW") == "" {
+		err = godotenv.Load(".env.dev")
+		if err != nil {
+			log.Print("Can't load env variables ", err)
+		}
+	}
+
+	// default PORT value
 	if os.Getenv("PORT") == "" {
 		os.Setenv("PORT", "8080")
 	}

@@ -2,6 +2,7 @@ package youtube
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -131,7 +132,7 @@ func (yt *YouTube) getChannelURL() string {
 }
 
 // GetChannel makes request to Google API and retreives snippet with basic information about channel
-func (yt *YouTube) GetChannel() {
+func (yt *YouTube) GetChannel() error {
 	log.SetPrefix("[YT CHANNEL] ")
 	URL := yt.getChannelURL()
 	log.Print("GET ", URL)
@@ -148,6 +149,9 @@ func (yt *YouTube) GetChannel() {
 
 	channel := channelResponse{}
 	json.Unmarshal(content, &channel)
+	if len(channel.Items) == 0 {
+		return errors.New("Can't find channel")
+	}
 	yt.Channel = channel.Items[0]
 
 	yt.Username = yt.Channel.Snippet.CustomURL
@@ -158,6 +162,7 @@ func (yt *YouTube) GetChannel() {
 		log.Fatal("Parse publishedAt ", err)
 	}
 	yt.Channel.Snippet.PublishedAt = publishedAt.Format(time.RFC1123Z)
+	return nil
 }
 
 // GetVideos makes request to Google API and retreives last 15 videos snippets
@@ -207,13 +212,16 @@ func init() {
 }
 
 // Create makes new variable of type YouTube and gets all detaisls
-func Create(idOrUsername string) YouTube {
+func Create(idOrUsername string) (YouTube, error) {
 	// TODO: Check if it's username or channelId
 	yt := YouTube{
 		ID: idOrUsername,
 	}
-	yt.GetChannel()
+	err := yt.GetChannel()
+	if err != nil {
+		return yt, err
+	}
 	yt.GetVideos()
 
-	return yt
+	return yt, nil
 }
