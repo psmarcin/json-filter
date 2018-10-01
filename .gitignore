@@ -16,3 +16,4 @@ youtubeGoesPodcast
 
 # ENV VARIABLES
 .env
+.env.dev
