@@ -26,4 +26,4 @@ Please keep in mind that this is my side project. I want to learn Go language pr
 #### Setup 
 There are no additional dependency except `go`. 
 
-Just run `go run main.go` and you are good to go. 
+First please put env variable that you can find in `now.js` into `.env` file and then just run `go run main.go` and you are good to go. 
