@@ -1,0 +1,23 @@
+/* RESET */
+body, html{
+  margin: 0;
+  padding: 0;
+}
+
+@media only screen and (max-width: 600px) {
+    body .container .columns {
+       margin-left: -15px;
+       margin-right: -15px;
+    }
+}
+/* NAVBAR */
+.navbar{
+  margin: 50px 0 ;
+}
+
+/* INDEX */
+
+.empty .empty-action input{
+  max-width: 500px;
+  margin: 15px auto;
+}
