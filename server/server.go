@@ -34,7 +34,7 @@ const ERR500 = "Internal Error"
 var templates *template.Template
 
 func init() {
-	templates = template.Must(template.ParseGlob("server/templates/*.gohtml"))
+	templates = template.Must(template.ParseGlob("templates/*.gohtml"))
 }
 
 // Start creates server with fixed routes
@@ -48,7 +48,7 @@ func Start() {
 	defer log.SetPrefix("")
 
 	router := mux.NewRouter()
-	assets := http.StripPrefix("/assets/", http.FileServer(http.Dir("server/assets")))
+	assets := http.StripPrefix("/assets/", http.FileServer(http.Dir("assets")))
 
 	log.Print(assets)
 	// routes
