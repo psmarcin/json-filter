@@ -8,9 +8,12 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
 	"time"
 )
 
+var youtubeChannelHttp = "http://www.youtube.com/channel/"
+var youtubeChannelHttps = "https://www.youtube.com/channel/"
 var channel = "https://www.googleapis.com/youtube/v3/channels"
 var videos = "https://www.googleapis.com/youtube/v3/search"
 var channelURL *url.URL
@@ -134,6 +137,7 @@ func (yt *YouTube) getChannelURL() string {
 // GetChannel makes request to Google API and retreives snippet with basic information about channel
 func (yt *YouTube) GetChannel() error {
 	log.SetPrefix("[YT CHANNEL] ")
+	defer log.SetPrefix("")
 	URL := yt.getChannelURL()
 	log.Print("GET ", URL)
 	response, err := http.Get(URL)
@@ -168,6 +172,7 @@ func (yt *YouTube) GetChannel() error {
 // GetVideos makes request to Google API and retreives last 15 videos snippets
 func (yt *YouTube) GetVideos() {
 	log.SetPrefix("[YT VIDEOS] ")
+	defer log.SetPrefix("")
 
 	URL := yt.getVideoURL()
 	log.Print("GET ", URL)
@@ -212,12 +217,20 @@ func init() {
 }
 
 // Create makes new variable of type YouTube and gets all detaisls
-func Create(idOrUsername string) (YouTube, error) {
+func Create(youtubeUrl string) (YouTube, error) {
 	// TODO: Check if it's username or channelId
+	log.Print("youtubeUrl", youtubeUrl)
 	yt := YouTube{
-		ID: idOrUsername,
+		ID: youtubeUrl,
 	}
-	err := yt.GetChannel()
+	url, err := url.Parse(youtubeUrl)
+	if err != nil {
+		return yt, err
+	}
+
+	channelID := strings.Split(url.Path, "/")[2]
+	yt.ID = channelID
+	err = yt.GetChannel()
 	if err != nil {
 		return yt, err
 	}
