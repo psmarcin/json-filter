@@ -10,18 +10,17 @@ import (
 )
 
 func feedHandler(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
-	youtubeUrl := r.FormValue("youtubeUrl")
+	youtubeURL := r.FormValue("youtubeUrl")
 	log.SetPrefix("[FEED] ")
 	defer log.SetPrefix("")
 
 	log.Printf("Request [%s] %s %s %s", r.Method, r.URL.RequestURI(), r.RemoteAddr, r.UserAgent())
-	if youtubeUrl == "" {
+	if youtubeURL == "" {
 		err := errors.New("You need to provide channel id as query param 'channelId'")
 		errorResponse(err, w)
 		return
 	}
-	youtubeFeed, err := youtube.Create(youtubeUrl)
+	youtubeFeed, err := youtube.Create(youtubeURL)
 	if err != nil {
 		log.Print("Error ", err)
 		errorResponse(err, w)

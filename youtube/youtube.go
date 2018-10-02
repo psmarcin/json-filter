@@ -228,7 +228,11 @@ func Create(youtubeUrl string) (YouTube, error) {
 		return yt, err
 	}
 
-	channelID := strings.Split(url.Path, "/")[2]
+	split := strings.Split(url.Path, "/")
+	if len(split) < 3 {
+		return yt, errors.New("URL not correct")
+	}
+	channelID := split[2]
 	yt.ID = channelID
 	err = yt.GetChannel()
 	if err != nil {
