@@ -17,6 +17,7 @@ const generateFeedUrl = (e)=>{
   const feedUrl = BASE_URL + encodeURIComponent(ytUrl)
   feedUrlElement.value = feedUrl
   feedResultElement.style.display = "block"
+  window.scroll(0, feedResultElement.offsetTop + 100)
 }
 
 
