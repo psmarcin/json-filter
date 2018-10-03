@@ -12,12 +12,12 @@
       </p>
       <div class="empty-action">
         <form method="GET" action="/feed" id="form">
-          <input type="url" id="youtubeUrl" class="form-input" name="youtubeUrl" />
+          <input type="url" id="youtubeUrl" class="form-input" name="youtubeUrl" required />
           <button type="submit" class="btn btn-primary" id="generate">Generate feed URL</button>
         </form>
         <div class="feedResult">
           <h5>Your feed URL: </h5>
-          <input type="url" id="feedUrl" class="form-input"/>
+          <input type="url" id="feedUrl" readonly="readonly" class="form-input"/>
         </div>
       </div>
     </div>

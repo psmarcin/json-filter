@@ -2,6 +2,7 @@
 body, html{
   margin: 0;
   padding: 0;
+  max-width: 100%;
 }
 
 @media only screen and (max-width: 600px) {
@@ -16,6 +17,9 @@ body, html{
 }
 
 /* INDEX */
+.empty #exampleUrl{
+  word-wrap: break-word;
+}
 
 .empty .empty-action input{
   max-width: 500px;
@@ -23,7 +27,7 @@ body, html{
 }
 
 .empty form{
-  margin-bottom: 90px;
+  margin-bottom: 40px;
 }
 
 .empty .feedResult{
