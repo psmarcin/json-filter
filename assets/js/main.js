@@ -3,6 +3,8 @@ const exampleElement = document.querySelector("#exampleUrl")
 const generateElement = document.querySelector("#generate")
 const feedUrlElement = document.querySelector("#feedUrl")
 const feedResultElement = document.querySelector(".feedResult")
+const formElement = document.querySelector("#form")
+
 const exampleUrl = exampleElement.innerHTML
 const BASE_URL = "http://podcast.psmarcin.me/feed?youtubeUrl="
 const fillExample = ()=>{
@@ -19,4 +21,4 @@ const generateFeedUrl = (e)=>{
 
 
 exampleElement.addEventListener("click", fillExample)
-generateElement.addEventListener("click", generateFeedUrl)
+formElement.addEventListener("submit", generateFeedUrl)
