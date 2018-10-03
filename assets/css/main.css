@@ -21,3 +21,11 @@ body, html{
   max-width: 500px;
   margin: 15px auto;
 }
+
+.empty form{
+  margin-bottom: 90px;
+}
+
+.empty .feedResult{
+  display: none;
+}
