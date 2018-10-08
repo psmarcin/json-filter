@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
@@ -44,13 +45,13 @@ func Start() {
 	defer log.SetPrefix("")
 
 	router := mux.NewRouter()
-	assets := http.StripPrefix("/assets/", http.FileServer(http.Dir("assets")))
+	assets := prometheus.InstrumentHandler("/assets", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
 
 	// routes
-	router.HandleFunc("/", rootHandler).Methods(http.MethodGet)
-	router.HandleFunc("/stats", statsHandler).Methods(http.MethodGet)
-	router.HandleFunc("/feed", feedHandler).Methods(http.MethodGet)
-	router.Handle("/metrics", promhttp.Handler()).Methods(http.MethodGet)
+	router.HandleFunc("/", prometheus.InstrumentHandlerFunc("/", rootHandler)).Methods(http.MethodGet)
+	router.HandleFunc("/stats", prometheus.InstrumentHandlerFunc("/stats", statsHandler)).Methods(http.MethodGet)
+	router.HandleFunc("/feed", prometheus.InstrumentHandlerFunc("/feed", feedHandler)).Methods(http.MethodGet)
+	router.Handle("/metrics", prometheus.InstrumentHandler("/metrics", promhttp.Handler())).Methods(http.MethodGet)
 	// static assets
 	http.Handle("/assets/", assets)
 	// mount router

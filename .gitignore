@@ -17,3 +17,6 @@ youtubeGoesPodcast
 # ENV VARIABLES
 .env
 .env.dev
+
+# hot-reload
+/tmp
