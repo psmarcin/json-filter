@@ -23,7 +23,7 @@ func errorResponse(e error, w http.ResponseWriter) {
 func jsonResponse(b []byte, w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json")
 	s := string(b)
-	log.Printf("Response %v", s)
+	log.Printf("Response  %v", s)
 	fmt.Fprintf(w, s)
 }
 

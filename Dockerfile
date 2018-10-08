@@ -2,7 +2,7 @@ FROM golang:1.11 as base
 WORKDIR /go/src/github.com/psmarcin/youtubeGoesPodcast/
 COPY . .
 RUN go get
-RUN ./make.sh
+RUN make build
 
 
 FROM alpine
