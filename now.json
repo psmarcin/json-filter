@@ -8,7 +8,7 @@
     "PS_GOOGLE_API": "@ps_google_api",
     "PS_NEWRELIC_KEY": "@ps_newrelic_key",
     "PORT":"8080",
-    "REMOTE_URL": "https://podcasts.psmarcin.me"
+    "REMOTE_URL": "https://podcast.psmarcin.me"
   },
   "scale": {
     "bru1": {
