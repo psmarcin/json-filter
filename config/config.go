@@ -15,12 +15,12 @@ func Init() {
 		log.Print("Load development config")
 		err := godotenv.Load(".env.dev")
 		if err != nil {
-			log.Print("Can't load env variables ", err)
+			log.Print("Can't load .env.dev file ", err)
 		}
 	} else {
 		err := godotenv.Load(".env")
 		if err != nil {
-			log.Print("Can't load env variables ", err)
+			log.Print("Can't load .env file ", err)
 		}
 	}
 
