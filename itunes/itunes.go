@@ -2,6 +2,7 @@ package itunes
 
 import (
 	"encoding/xml"
+	"os"
 
 	"github.com/psmarcin/youtubeGoesPodcast/youtube"
 )
@@ -63,6 +64,7 @@ func (f *Feed) ToXML() []byte {
 }
 
 func Create(yt youtube.YouTube) Feed {
+	VIDEO_LINK_BASE := os.Getenv("REMOTE_URL") + "/video/"
 	feed := Feed{
 		Title:       yt.Channel.Snippet.Title,
 		Link:        YOUTUBE_CHANNEL + yt.Channel.ID,
@@ -95,7 +97,7 @@ func Create(yt youtube.YouTube) Feed {
 		}
 		item.Image.Href = "https://i.ytimg.com/vi/" + v.ID.VideoID + "/maxresdefault.jpg"
 
-		item.Enclosure.URL = "http://podsync.net/download/PNyUU6D62/" + v.ID.VideoID + ".mp4?exp=tmp"
+		item.Enclosure.URL = VIDEO_LINK_BASE + v.ID.VideoID
 		item.Enclosure.Type = "video/mp4"
 		item.Enclosure.Length = 242200000
 
