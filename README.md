@@ -10,11 +10,11 @@ There are so many great videos on youtube that works perfect without video, and 
 
 ### TODO
 
-* [ ] PoC for video https://github.com/psmarcin/youtubeGoesPodcast/issues/10
-* [ ] PoC for audio https://github.com/psmarcin/youtubeGoesPodcast/issues/11
-* [ ] Fix podcasts feed to support all fields https://github.com/psmarcin/youtubeGoesPodcast/issues/12
+* [x] PoC for video https://github.com/psmarcin/youtubeGoesPodcast/issues/10
+* [x] PoC for audio https://github.com/psmarcin/youtubeGoesPodcast/issues/11
+* [x] Fix podcasts feed to support all fields https://github.com/psmarcin/youtubeGoesPodcast/issues/12
 * [ ] Tests https://github.com/psmarcin/youtubeGoesPodcast/issues/13
-* [ ] Startup scripts https://github.com/psmarcin/youtubeGoesPodcast/issues/14
+* [x] Startup scripts https://github.com/psmarcin/youtubeGoesPodcast/issues/14
 * [x] CI & CD https://github.com/psmarcin/youtubeGoesPodcast/pull/6
 * [x] Readme https://github.com/psmarcin/youtubeGoesPodcast/pull/8
 
