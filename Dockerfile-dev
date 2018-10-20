@@ -2,7 +2,7 @@ FROM golang:1.11 as base
 
 EXPOSE 8080
 WORKDIR /go/src/github.com/psmarcin/youtubeGoesPodcast/
-COPY ./ .
+COPY . /go/src/github.com/psmarcin/youtubeGoesPodcast/
 
 RUN go get
 RUN go get github.com/pilu/fresh

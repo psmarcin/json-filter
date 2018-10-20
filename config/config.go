@@ -10,14 +10,15 @@ import (
 // Init load env variables from files
 func Init() {
 	log.SetPrefix("[CONFIG] ")
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Print("Can't load env variables ", err)
-	}
-
 	// if loacl load developmemnt config
 	if os.Getenv("NOW") == "" {
-		err = godotenv.Load(".env.dev")
+		log.Print("Load development config")
+		err := godotenv.Load(".env.dev")
+		if err != nil {
+			log.Print("Can't load env variables ", err)
+		}
+	} else {
+		err := godotenv.Load(".env")
 		if err != nil {
 			log.Print("Can't load env variables ", err)
 		}
