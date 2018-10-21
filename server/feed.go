@@ -14,7 +14,7 @@ func feedHandler(w http.ResponseWriter, r *http.Request) {
 	log.SetPrefix("[FEED] ")
 	defer log.SetPrefix("")
 
-	log.Printf("Get %s %s %s %s", r.URL.RequestURI(), r.UserAgent())
+	log.Printf("Get %s %s", r.URL.RequestURI(), r.UserAgent())
 	if youtubeURL == "" {
 		err := errors.New("You need to provide channel id as query param 'channelId'")
 		errorResponse(err, w)
