@@ -139,7 +139,6 @@ func (yt *YouTube) GetChannel() error {
 	log.SetPrefix("[YT CHANNEL] ")
 	defer log.SetPrefix("")
 	URL := yt.getChannelURL()
-	log.Print("GET ", URL)
 	response, err := http.Get(URL)
 	if err != nil {
 		log.Fatal("Request ", err)
@@ -175,7 +174,6 @@ func (yt *YouTube) GetVideos() {
 	defer log.SetPrefix("")
 
 	URL := yt.getVideoURL()
-	log.Print("GET ", URL)
 	response, err := http.Get(URL)
 	if err != nil {
 		log.Fatal("Request ", err)
@@ -188,7 +186,6 @@ func (yt *YouTube) GetVideos() {
 	defer response.Body.Close()
 
 	var videos videoResponse
-
 	json.Unmarshal(content, &videos)
 
 	// Unify publishedAt time
@@ -219,7 +216,6 @@ func init() {
 // Create makes new variable of type YouTube and gets all detaisls
 func Create(youtubeUrl string) (YouTube, error) {
 	// TODO: Check if it's username or channelId
-	log.Print("youtubeUrl", youtubeUrl)
 	yt := YouTube{
 		ID: youtubeUrl,
 	}
