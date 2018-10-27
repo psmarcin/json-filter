@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/otium/ytdl"
@@ -13,46 +14,31 @@ import (
 
 // SOURCES are itag streams that we support, order count
 var SOURCES = []interface{}{"139", "140", "141", "256", "258", "325", "328", "171", "172", "249", "250", "251", "5"}
-
-func streamVideo(url string, header http.Header, w http.ResponseWriter) error {
-	log.SetPrefix("[STREAM] ")
-	defer log.SetPrefix("")
-
-	response, err := http.Get(url)
-	checkError(err, w)
-
-	log.Print("[STREAM] Headers ", header)
-	response.Header.Set("Range", header.Get("Range"))
-
-	w.Header().Set("Content-Length", response.Header["Content-Length"][0])
-	w.Header().Set("X-Content-Type-Options", response.Header["X-Content-Type-Options"][0])
-	w.Header().Set("Last-Modified", response.Header["Last-Modified"][0])
-	w.Header().Set("Accept-Ranges", response.Header["Accept-Ranges"][0])
-	w.Header().Set("Cache-Control", response.Header["Cache-Control"][0])
-	w.Header().Set("Connection", response.Header["Connection"][0])
-	w.Header().Set("Content-Type", response.Header["Content-Type"][0])
-	w.Header().Set("Date", response.Header["Date"][0])
-	w.Header().Set("Expires", response.Header["Expires"][0])
-	io.Copy(w, response.Body)
-	return nil
+var HEADER_FIELDS = []string{
+	"Content-Length",
+	"X-Content-Type-Options",
+	"Last-Modified",
+	"Cache-Control",
+	"Connection",
+	"Content-Type",
+	"Date",
+	"Expires",
+	"Accept-Ranges",
+	"Content-Range",
+	"Range",
+	"User-Agent",
 }
 
-func videoHandler(w http.ResponseWriter, r *http.Request) {
-	log.SetPrefix("[VIDEO] ")
-	defer log.SetPrefix("")
+func getVideoURL(videoID string) (*url.URL, error) {
 
 	var videoURL *url.URL
-	vars := mux.Vars(r)
-	log.Print("Get ", vars["videoId"], " ", r.UserAgent())
-
-	vid, err := ytdl.GetVideoInfoFromID(vars["videoId"])
-	checkError(err, w)
-
+	vid, err := ytdl.GetVideoInfoFromID(videoID)
+	if err != nil {
+		return nil, err
+	}
 	formats := vid.Formats.Filter(ytdl.FormatItagKey, SOURCES)
 	if len(formats) == 0 {
-		w.WriteHeader(http.StatusBadRequest)
-		errorResponse(errors.New("Can't find proper source"), w)
-		return
+		return nil, errors.New("Can't find proper source")
 	}
 
 	// check urls if are valid (sometimes google return url that response with 403 status)
@@ -68,11 +54,79 @@ func videoHandler(w http.ResponseWriter, r *http.Request) {
 		videoURL = u
 		break
 	}
+	return videoURL, nil
+}
+
+func setHeaders(src, dest http.Header) {
+	for _, key := range HEADER_FIELDS {
+		val := src.Get(key)
+		if len(val) == 0 {
+			continue
+		}
+		dest.Set(key, val)
+	}
+}
+
+func streamVideo(url string, header http.Header, w http.ResponseWriter, method string) error {
+	log.SetPrefix("[STREAM] ")
+	defer log.SetPrefix("")
+
+	req, err := http.NewRequest(method, url, nil)
+	checkError(err, w)
+
+	// set request header
+	setHeaders(header, req.Header)
+
+	client := &http.Client{Timeout: time.Second * 10}
+	resp, err := client.Do(req)
+	checkError(err, w)
+
+	// set respoinse header
+	setHeaders(resp.Header, w.Header())
+	val := header.Get("Range")
+	if val != "" {
+		w.WriteHeader(http.StatusPartialContent)
+	} else {
+		w.WriteHeader(http.StatusOK)
+	}
+	io.Copy(w, resp.Body)
+	return nil
+}
+
+func videoHandler(w http.ResponseWriter, r *http.Request) {
+	log.SetPrefix("[VIDEO GET] ")
+	defer log.SetPrefix("")
+
+	vars := mux.Vars(r)
+	log.Print("Get ", vars["videoId"], " ", r.UserAgent())
+
+	videoURL, err := getVideoURL(vars["videoId"])
+	checkError(err, w)
+
 	if videoURL.String() == "" {
 		e := errors.New("Can't find proper source")
 		checkError(e, w)
 	}
 
-	err = streamVideo(videoURL.String(), r.Header, w)
+	err = streamVideo(videoURL.String(), r.Header, w, http.MethodGet)
+	checkError(err, w)
+}
+
+func videoHeadHandler(w http.ResponseWriter, r *http.Request) {
+	log.SetPrefix("[VIDEO HEAD] ")
+	defer log.SetPrefix("")
+
+	vars := mux.Vars(r)
+	log.Print("Get ", vars["videoId"], " ", r.UserAgent())
+
+	videoURL, err := getVideoURL(vars["videoId"])
+	checkError(err, w)
+
+	if videoURL.String() == "" {
+		e := errors.New("Can't find proper source")
+		checkError(e, w)
+	}
+
+	err = streamVideo(videoURL.String(), r.Header, w, http.MethodHead)
 	checkError(err, w)
 }
