@@ -1,3 +1,4 @@
+const baseUrl = window.location
 const inputElement = document.querySelector("#youtubeUrl")
 const exampleElement = document.querySelector("#exampleUrl")
 const generateElement = document.querySelector("#generate")
@@ -6,7 +7,7 @@ const feedResultElement = document.querySelector(".feedResult")
 const formElement = document.querySelector("#form")
 
 const exampleUrl = exampleElement.innerHTML
-const BASE_URL = "https://podcast.psmarcin.me/feed?youtubeUrl="
+const BASE_URL = `${baseUrl}feed?youtubeUrl=`
 const fillExample = ()=>{
   inputElement.value = exampleUrl
 }
