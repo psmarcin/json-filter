@@ -21,11 +21,7 @@ func feedHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	youtubeFeed, err := youtube.Create(youtubeURL)
-	if err != nil {
-		log.Print("Error ", err)
-		errorResponse(err, w)
-		return
-	}
+	checkError(err, w)
 	iTunesFeed := itunes.Create(youtubeFeed)
 	xmlResponse(iTunesFeed.ToXML(), w)
 }

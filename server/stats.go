@@ -10,10 +10,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 	log.SetPrefix("[STATS] ")
 	defer log.SetPrefix("")
 	resJSON, err := json.Marshal(rootStatus)
-	if err != nil {
-		errorResponse(err, w)
-		return
-	}
+	checkError(err, w)
 
 	jsonResponse(resJSON, w)
 }
