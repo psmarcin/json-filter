@@ -8,6 +8,13 @@ import (
 	"time"
 )
 
+func checkError(e error, w http.ResponseWriter) {
+	if e != nil {
+		errorResponse(e, w)
+		return
+	}
+}
+
 func errorResponse(e error, w http.ResponseWriter) {
 	err := Error{
 		IsError:      true,
