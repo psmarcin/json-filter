@@ -4,7 +4,7 @@ import (
 	"encoding/xml"
 	"os"
 
-	"github.com/psmarcin/youtubeGoesPodcast/youtube"
+	"github.com/psmarcin/youtubeGoesPodcast/pkg/youtube"
 )
 
 var YOUTUBE_VIDEO = "https://www.youtube.com/watch?v="

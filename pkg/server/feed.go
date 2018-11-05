@@ -5,8 +5,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/psmarcin/youtubeGoesPodcast/itunes"
-	"github.com/psmarcin/youtubeGoesPodcast/youtube"
+	"github.com/psmarcin/youtubeGoesPodcast/pkg/itunes"
+	"github.com/psmarcin/youtubeGoesPodcast/pkg/youtube"
 )
 
 func feedHandler(w http.ResponseWriter, r *http.Request) {

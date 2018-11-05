@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/psmarcin/youtubeGoesPodcast/config"
-	"github.com/psmarcin/youtubeGoesPodcast/server"
+	"github.com/psmarcin/youtubeGoesPodcast/pkg/config"
+	"github.com/psmarcin/youtubeGoesPodcast/pkg/server"
 )
 
 func init() {
