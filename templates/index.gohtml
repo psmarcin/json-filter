@@ -6,13 +6,13 @@
 
     <div class="empty">
       <p class="empty-title h5">Fill YouTube channel URL</p>
-      <p class="empty-subtitle">Try: <code id="exampleUrl" class="tooltip tooltip-bottom" data-tooltip="Click to autofill URL">https://www.youtube.com/channel/UCz97F7dMxBNOfGYu3rx8aCw</code></p>
+      <p class="empty-subtitle">Try: <code id="exampleUrl" class="tooltip tooltip-bottom" data-tooltip="Click to autofill URL">UCz97F7dMxBNOfGYu3rx8aCw</code></p>
       <p class="empty-subtitle">
         You will be redirected to podcast feed url, that will stay there for you. Feel free to <strong>copy</strong> it and use in your podcast app. More at: <a href="https://www.wikihow.com/Use-Podcasting" target="_blank" ref="nofollow">https://www.wikihow.com/Use-Podcasting</a>
       </p>
       <div class="empty-action">
         <form method="GET" action="/feed" id="form">
-          <input type="url" id="youtubeUrl" class="form-input" name="youtubeUrl" required />
+          <input type="text" id="youtubeUrl" class="form-input" name="youtubeUrl" required />
           <button type="submit" class="btn btn-primary" id="generate">Generate feed URL</button>
         </form>
         <div class="feedResult">

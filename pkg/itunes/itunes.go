@@ -28,6 +28,9 @@ type Feed struct {
 	ITunesImage struct {
 		Href string `xml:"href,attr"`
 	} `xml:"itunes:image"`
+	ITunesCategory struct {
+		Text string `xml:"text,attr"`
+	} `xml:"itunes:category"`
 	Author  string   `xml:"itunes:author"`
 	XMLName xml.Name `xml:"channel"`
 	Item    []Item   `xml:"item"`
@@ -48,10 +51,11 @@ type Item struct {
 	Image    struct {
 		Href string `xml:"href,attr"`
 	} `xml:"itunes:image"`
-	Order   int    `xml:"itunes:order"`
-	ITitle  string `xml:"itunes:title"`
-	Summary string `xml:"itunes:summary"`
-	Author  string `xml:"itunes:author"`
+	Order    int    `xml:"itunes:order"`
+	ITitle   string `xml:"itunes:title"`
+	Summary  string `xml:"itunes:summary"`
+	Author   string `xml:"itunes:author"`
+	Duration int    `xml:"itunes:duration"`
 }
 
 type Owner struct {
@@ -66,25 +70,27 @@ func (f *Feed) ToXML() []byte {
 func Create(yt youtube.YouTube) Feed {
 	VIDEO_LINK_BASE := os.Getenv("REMOTE_URL") + "/video/"
 	feed := Feed{
-		Title:       yt.Channel.Snippet.Title,
-		Link:        YOUTUBE_CHANNEL + yt.Channel.ID,
-		Description: yt.Channel.Snippet.Description,
-		Category:    "TV",
-		Author:      yt.Channel.Snippet.Title,
-		Subtitle:    yt.Channel.Snippet.Title,
-		Generator:   "psPodcast",
-		Language:    yt.Channel.Snippet.Country,
-		PubDate:     yt.Channel.Snippet.PublishedAt,
+		Title:         yt.Channel.Snippet.Title,
+		Link:          YOUTUBE_CHANNEL + yt.Channel.ID,
+		Description:   yt.Channel.Snippet.Description,
+		Category:      "TV &amp; Film",
+		Author:        yt.Channel.Snippet.Title,
+		Subtitle:      yt.Channel.Snippet.Title,
+		Generator:     "psPodcast",
+		Language:      yt.Channel.Snippet.Country,
+		PubDate:       yt.Channel.Snippet.PublishedAt,
+		LastBuildDate: yt.Channel.Snippet.PublishedAt,
 	}
+	feed.ITunesCategory.Text = "TV &amp; Film"
 	feed.Image.URL = yt.Channel.Snippet.Thumbnails.High.URL
 	feed.Image.Title = yt.Channel.Snippet.Title
-	feed.Image.Link = yt.Channel.ID
+	feed.Image.Link = YOUTUBE_CHANNEL + yt.Channel.ID
 	feed.ITunesImage.Href = yt.Channel.Snippet.Thumbnails.High.URL
 	items := []Item{}
 
 	for i, v := range yt.Videos {
 		item := Item{
-			GUID:        "pspod://" + yt.Channel.ID + "/" + v.ID.VideoID,
+			GUID:        "http://podsync.net/download/UScq3fyKG/" + v.ID.VideoID + ".mp4",
 			Title:       v.Snippet.Title,
 			Link:        YOUTUBE_VIDEO + v.ID.VideoID,
 			Description: v.Snippet.Description,
@@ -98,8 +104,9 @@ func Create(yt youtube.YouTube) Feed {
 		item.Image.Href = "https://i.ytimg.com/vi/" + v.ID.VideoID + "/maxresdefault.jpg"
 
 		item.Enclosure.URL = VIDEO_LINK_BASE + v.ID.VideoID
-		item.Enclosure.Type = "video/mp4"
-		item.Enclosure.Length = 242200000
+		item.Enclosure.Type = "audio/mp3"
+		item.Enclosure.Length = 1
+		item.Duration = 1
 
 		items = append(items, item)
 	}

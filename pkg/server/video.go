@@ -98,7 +98,7 @@ func videoHandler(w http.ResponseWriter, r *http.Request) {
 	defer log.SetPrefix("")
 
 	vars := mux.Vars(r)
-	log.Print("Get ", vars["videoId"], " ", r.UserAgent())
+	log.Print("Get ", vars["videoId"], " ", r.Header)
 
 	videoURL, err := getVideoURL(vars["videoId"])
 	checkError(err, w)

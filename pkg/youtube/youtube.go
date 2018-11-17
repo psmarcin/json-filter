@@ -200,37 +200,45 @@ func (yt *YouTube) GetVideos() {
 	yt.Videos = videos.Items
 }
 
+func (yt *YouTube) setChannelID(source, sourceType string) error {
+	switch sourceType {
+	case "channel":
+		yt.ID = source
+	case "channelUrl":
+		url, err := url.Parse(source)
+		if err != nil {
+			return err
+		}
+		split := strings.Split(url.Path, "/")
+		if len(split) < 3 {
+			return errors.New("Wrong URL")
+		}
+		channelID := split[2] // channelId from url
+		yt.ID = channelID
+	default:
+		return errors.New("Source type not supported")
+	}
+	return nil
+}
+
 func init() {
 	var err error
 	videosURL, err = url.Parse(videos)
 	if err != nil {
-		log.Fatal("Cant' parse video url")
+		log.Fatal("Can't parse video url")
 	}
 
 	channelURL, err = url.Parse(channel)
 	if err != nil {
-		log.Fatal("Cant' parse channel url")
+		log.Fatal("Can't parse channel url")
 	}
 }
 
 // Create makes new variable of type YouTube and gets all detaisls
-func Create(youtubeUrl string) (YouTube, error) {
-	// TODO: Check if it's username or channelId
-	yt := YouTube{
-		ID: youtubeUrl,
-	}
-	url, err := url.Parse(youtubeUrl)
-	if err != nil {
-		return yt, err
-	}
-
-	split := strings.Split(url.Path, "/")
-	if len(split) < 3 {
-		return yt, errors.New("URL not correct")
-	}
-	channelID := split[2]
-	yt.ID = channelID
-	err = yt.GetChannel()
+func Create(id, sourceType string) (YouTube, error) {
+	yt := YouTube{}
+	yt.setChannelID(id, sourceType)
+	err := yt.GetChannel()
 	if err != nil {
 		return yt, err
 	}

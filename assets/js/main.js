@@ -7,7 +7,7 @@ const feedResultElement = document.querySelector(".feedResult")
 const formElement = document.querySelector("#form")
 
 const exampleUrl = exampleElement.innerHTML
-const BASE_URL = `${baseUrl}feed?youtubeUrl=`
+const BASE_URL = `${baseUrl}feed/channel/`
 const fillExample = ()=>{
   inputElement.value = exampleUrl
 }
