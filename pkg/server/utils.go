@@ -6,6 +6,8 @@ import (
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/psmarcin/youtubeGoesPodcast/pkg/itunes"
 )
 
 func checkError(e error, w http.ResponseWriter) {
@@ -41,4 +43,9 @@ func xmlResponse(b []byte, w http.ResponseWriter) {
 ` + string(b) + `
 </rss>`
 	fmt.Fprintf(w, s)
+}
+
+func htmlFeedResponse(feed itunes.Feed, w http.ResponseWriter) {
+	w.Header().Set("Content-Type", "text/html; charset=UTF-8")
+	templates.ExecuteTemplate(w, "feed.gohtml", feed)
 }

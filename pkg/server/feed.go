@@ -12,7 +12,7 @@ import (
 	"github.com/psmarcin/youtubeGoesPodcast/pkg/youtube"
 )
 
-func baseHandler(w http.ResponseWriter, r *http.Request, sourceType, source string) {
+func baseHandler(w http.ResponseWriter, r *http.Request, sourceType, source, contentType string) {
 	log.SetPrefix("[FEED] ")
 	defer log.SetPrefix("")
 
@@ -26,6 +26,13 @@ func baseHandler(w http.ResponseWriter, r *http.Request, sourceType, source stri
 	youtubeFeed, err := youtube.Create(source, sourceType)
 	checkError(err, w)
 	iTunesFeed := itunes.Create(youtubeFeed)
+
+	// http request
+	if strings.Contains(contentType, "text/html") {
+		htmlFeedResponse(iTunesFeed, w)
+		return
+	}
+	// default
 	xmlResponse(iTunesFeed.ToXML(), w)
 }
 
@@ -44,5 +51,5 @@ func feedHandler(w http.ResponseWriter, r *http.Request) {
 
 func feedPathHandler(w http.ResponseWriter, r *http.Request) {
 	parameters := mux.Vars(r)
-	baseHandler(w, r, parameters["sourceType"], parameters["source"])
+	baseHandler(w, r, parameters["sourceType"], parameters["source"], r.Header.Get("accept"))
 }
