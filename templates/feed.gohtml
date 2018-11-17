@@ -1,0 +1,20 @@
+
+{{template "header"}}
+{{template "navbar"}}
+<div class="columns">
+  <div class="column col-12">
+
+    <div class="empty">
+      <p class="empty-title h5">Videos for channel {{.Title}}</p>
+      <ol>
+        {{range .Item}}
+        <li><a href="{{.Enclosure.URL}}">{{.Title}}</a></li>
+        {{else}}
+        <li>No items</li>
+        {{end}}
+      </ol>
+    </div>
+    
+  </div>
+</div>
+{{template "footer"}}
