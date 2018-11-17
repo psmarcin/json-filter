@@ -9,6 +9,7 @@
     "PORT":"8080",
     "REMOTE_URL": "https://podcast.psmarcin.me"
   },
+  "version": 2,
   "scale": {
     "bru1": {
       "min": 0,
