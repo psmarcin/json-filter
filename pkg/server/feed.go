@@ -16,7 +16,7 @@ func baseHandler(w http.ResponseWriter, r *http.Request, sourceType, source stri
 	log.SetPrefix("[FEED] ")
 	defer log.SetPrefix("")
 
-	log.Printf("Get %s %s", r.URL.RequestURI(), r.UserAgent(), source, sourceType)
+	log.Printf("Get %s %s %s %s", r.URL.RequestURI(), r.UserAgent(), source, sourceType)
 	if sourceType == "" || source == "" {
 		err := errors.New("You need to provide channel id as query param 'channelId'")
 		errorResponse(err, w)
