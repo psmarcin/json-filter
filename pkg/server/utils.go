@@ -43,6 +43,7 @@ func errorResponse(e error, w http.ResponseWriter) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusBadRequest)
+	logger.Logger.Print("[ERROR] ", err)
 	resJSON, _ := json.Marshal(err)
 	fmt.Fprint(w, string(resJSON))
 }
