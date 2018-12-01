@@ -3,13 +3,14 @@ package youtube
 import (
 	"encoding/json"
 	"errors"
-	"github.com/psmarcin/youtubeGoesPodcast/pkg/logger"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/psmarcin/youtubeGoesPodcast/pkg/logger"
 )
 
 var youtubeChannelHttp = "http://www.youtube.com/channel/"
@@ -26,6 +27,11 @@ type YouTube struct {
 	Username string
 	Channel  Channel
 	Videos   []Video
+	params   params
+}
+
+type params struct {
+	search string
 }
 
 type channelResponse struct {
@@ -121,8 +127,9 @@ func (yt *YouTube) getVideoURL() string {
 	query.Add("key", os.Getenv("PS_GOOGLE_API"))
 	query.Add("part", "snippet")
 	query.Add("channelId", yt.Channel.ID)
-	query.Add("maxResults", "15")
+	query.Add("maxResults", "25")
 	query.Add("order", "date")
+	query.Add("q", yt.params.search)
 	return videosURL.String() + "?" + query.Encode()
 }
 
@@ -222,8 +229,12 @@ func init() {
 }
 
 // New makes new variable of type YouTube and gets all detaisls
-func New(id, sourceType string) (YouTube, error) {
-	yt := YouTube{}
+func New(id, sourceType, search string) (YouTube, error) {
+	yt := YouTube{
+		params: params{
+			search: search,
+		},
+	}
 	yt.setChannelID(id, sourceType)
 	err := yt.GetChannel()
 	if err != nil {

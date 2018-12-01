@@ -7,6 +7,8 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/psmarcin/youtubeGoesPodcast/pkg/logger"
+
 	"github.com/otium/ytdl"
 )
 
