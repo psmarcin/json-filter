@@ -10,14 +10,28 @@
       <p class="empty-subtitle">
         You will be redirected to podcast feed url, that will stay there for you. Feel free to <strong>copy</strong> it and use in your podcast app. More at: <a href="https://www.wikihow.com/Use-Podcasting" target="_blank" ref="nofollow">https://www.wikihow.com/Use-Podcasting</a>
       </p>
+      <p class="empty-subtitle">
+        You can also use "Search" as a filter for videos. For example channel PewDiePie has some videos with title "Dr. Phil", so you can filter videos in feed by putting "Dr. Phil" into "Search", then generate new unique url.
+      </p>
       <div class="empty-action">
         <form method="GET" action="/feed" id="form">
-          <input type="text" id="youtubeUrl" class="form-input" name="youtubeUrl" required />
+          <label for="youtubeUrl">
+            Channel ID: 
+            <input type="text" id="youtubeUrl" class="form-input" name="youtubeUrl" required />
+          </label>
+          <label for="search">
+            Search:
+            <input type="search" id="search" class="form-input" name="search" />
+          </label>
           <button type="submit" class="btn btn-primary" id="generate">Generate feed URL</button>
         </form>
         <div class="feedResult">
           <h5>Your feed URL: </h5>
           <input type="url" id="feedUrl" readonly="readonly" class="form-input"/>
+          <!-- Trigger -->
+          <button class="btn" data-clipboard-target="#feedUrl">
+              Copy
+          </button>
         </div>
       </div>
     </div>

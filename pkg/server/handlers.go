@@ -20,6 +20,8 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 func feedHandler(w http.ResponseWriter, r *http.Request) {
 
 	parameters := mux.Vars(r)
+	r.ParseForm()
+	querySearch := r.FormValue("search")
 	contentType := r.Header.Get("accept")
 	source := string(parameters["source"])
 	sourceType := string(parameters["sourceType"])
@@ -31,7 +33,7 @@ func feedHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	youtubeFeed, err := youtube.New(source, sourceType)
+	youtubeFeed, err := youtube.New(source, sourceType, querySearch)
 	checkError(err, w)
 	iTunesFeed := itunes.New(youtubeFeed)
 
@@ -61,6 +63,8 @@ func videoHandler(w http.ResponseWriter, r *http.Request) {
 		e := errors.New("Can't find proper source")
 		checkError(e, w)
 	}
+
+	// logger.Logger.Printf("Request URL %s", videoURL.RequestURI())
 
 	err = streamVideo(videoURL.String(), r.Header, w, http.MethodGet)
 	checkError(err, w)

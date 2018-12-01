@@ -5,11 +5,10 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/psmarcin/youtubeGoesPodcast/pkg/logger"
-
 	"github.com/gorilla/mux"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/psmarcin/youtubeGoesPodcast/pkg/logger"
 )
 
 var templates *template.Template
