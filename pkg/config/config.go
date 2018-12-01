@@ -1,6 +1,7 @@
 package config
 
 import (
+	"github.com/psmarcin/youtubeGoesPodcast/pkg/logger"
 	"log"
 	"os"
 
@@ -9,10 +10,9 @@ import (
 
 // Init load env variables from files
 func Init() {
-	log.SetPrefix("[CONFIG] ")
-	// if loacl load developmemnt config
+	// if load load developmemnt config
 	if os.Getenv("NOW") == "" {
-		log.Print("Load development config")
+		logger.Logger.Print("Load development config")
 		err := godotenv.Load(".env.dev")
 		if err != nil {
 			log.Print("Can't load .env.dev file ", err)

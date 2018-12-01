@@ -10,6 +10,7 @@ import (
 var YOUTUBE_VIDEO = "https://www.youtube.com/watch?v="
 var YOUTUBE_CHANNEL = "https://www.youtube.com/channel/"
 
+// Feed struct for JSON
 type Feed struct {
 	Title         string `xml:"title"`
 	Link          string `xml:"link"`
@@ -36,6 +37,7 @@ type Feed struct {
 	Item    []Item   `xml:"item"`
 }
 
+// Item struct for JSON
 type Item struct {
 	GUID        string `xml:"guid"`
 	Title       string `xml:"title"`
@@ -58,17 +60,20 @@ type Item struct {
 	Duration int    `xml:"itunes:duration"`
 }
 
+// Owner struct
 type Owner struct {
 	Email string `xml:"itunes:email"`
 }
 
+// ToXML return XML
 func (f *Feed) ToXML() []byte {
 	b, _ := xml.MarshalIndent(f, "  ", "  ")
 	return b
 }
 
-func Create(yt youtube.YouTube) Feed {
-	VIDEO_LINK_BASE := os.Getenv("REMOTE_URL") + "/video/"
+// New return new Feed
+func New(yt youtube.YouTube) Feed {
+	videoLinkBase := os.Getenv("REMOTE_URL") + "/video/"
 	feed := Feed{
 		Title:         yt.Channel.Snippet.Title,
 		Link:          YOUTUBE_CHANNEL + yt.Channel.ID,
@@ -86,7 +91,7 @@ func Create(yt youtube.YouTube) Feed {
 	feed.Image.Title = yt.Channel.Snippet.Title
 	feed.Image.Link = YOUTUBE_CHANNEL + yt.Channel.ID
 	feed.ITunesImage.Href = yt.Channel.Snippet.Thumbnails.High.URL
-	items := []Item{}
+	var items []Item
 
 	for i, v := range yt.Videos {
 		item := Item{
@@ -103,7 +108,7 @@ func Create(yt youtube.YouTube) Feed {
 		}
 		item.Image.Href = "https://i.ytimg.com/vi/" + v.ID.VideoID + "/maxresdefault.jpg"
 
-		item.Enclosure.URL = VIDEO_LINK_BASE + v.ID.VideoID
+		item.Enclosure.URL = videoLinkBase + v.ID.VideoID
 		item.Enclosure.Type = "audio/mp3"
 		item.Enclosure.Length = 1
 		item.Duration = 1
