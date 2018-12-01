@@ -3,12 +3,30 @@ package server
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 
+	"github.com/psmarcin/youtubeGoesPodcast/pkg/logger"
+
 	"github.com/psmarcin/youtubeGoesPodcast/pkg/itunes"
 )
+
+// status struct
+type status struct {
+	Ok        bool      `json:"ok"`
+	StartedAt time.Time `json:"startedAt"`
+}
+
+type jsonError struct {
+	IsError      bool      `json:"isError"`
+	Timestamp    time.Time `json:"timestamp"`
+	ErrorMessage string    `json:"error"`
+}
+
+var rootStatus = status{
+	Ok:        true,
+	StartedAt: time.Now(),
+}
 
 func checkError(e error, w http.ResponseWriter) {
 	if e != nil {
@@ -18,7 +36,7 @@ func checkError(e error, w http.ResponseWriter) {
 }
 
 func errorResponse(e error, w http.ResponseWriter) {
-	err := Error{
+	err := jsonError{
 		IsError:      true,
 		Timestamp:    time.Now(),
 		ErrorMessage: string(e.Error()),
@@ -32,7 +50,7 @@ func errorResponse(e error, w http.ResponseWriter) {
 func jsonResponse(b []byte, w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json")
 	s := string(b)
-	log.Printf("Response  %v", s)
+	logger.Logger.Printf("Response  %v", s)
 	fmt.Fprintf(w, s)
 }
 

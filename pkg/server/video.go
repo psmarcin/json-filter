@@ -3,12 +3,10 @@ package server
 import (
 	"errors"
 	"io"
-	"log"
 	"net/http"
 	"net/url"
 	"time"
 
-	"github.com/gorilla/mux"
 	"github.com/otium/ytdl"
 )
 
@@ -68,9 +66,6 @@ func setHeaders(src, dest http.Header) {
 }
 
 func streamVideo(url string, header http.Header, w http.ResponseWriter, method string) error {
-	log.SetPrefix("[STREAM] ")
-	defer log.SetPrefix("")
-
 	req, err := http.NewRequest(method, url, nil)
 	checkError(err, w)
 
@@ -91,42 +86,4 @@ func streamVideo(url string, header http.Header, w http.ResponseWriter, method s
 	}
 	io.Copy(w, resp.Body)
 	return nil
-}
-
-func videoHandler(w http.ResponseWriter, r *http.Request) {
-	log.SetPrefix("[VIDEO GET] ")
-	defer log.SetPrefix("")
-
-	vars := mux.Vars(r)
-	log.Print("Get ", vars["videoId"], " ", r.Header)
-
-	videoURL, err := getVideoURL(vars["videoId"])
-	checkError(err, w)
-
-	if videoURL.String() == "" {
-		e := errors.New("Can't find proper source")
-		checkError(e, w)
-	}
-
-	err = streamVideo(videoURL.String(), r.Header, w, http.MethodGet)
-	checkError(err, w)
-}
-
-func videoHeadHandler(w http.ResponseWriter, r *http.Request) {
-	log.SetPrefix("[VIDEO HEAD] ")
-	defer log.SetPrefix("")
-
-	vars := mux.Vars(r)
-	log.Print("Get ", vars["videoId"], " ", r.UserAgent())
-
-	videoURL, err := getVideoURL(vars["videoId"])
-	checkError(err, w)
-
-	if videoURL.String() == "" {
-		e := errors.New("Can't find proper source")
-		checkError(e, w)
-	}
-
-	err = streamVideo(videoURL.String(), r.Header, w, http.MethodHead)
-	checkError(err, w)
 }

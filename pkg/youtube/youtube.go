@@ -3,8 +3,8 @@ package youtube
 import (
 	"encoding/json"
 	"errors"
+	"github.com/psmarcin/youtubeGoesPodcast/pkg/logger"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -136,17 +136,15 @@ func (yt *YouTube) getChannelURL() string {
 
 // GetChannel makes request to Google API and retreives snippet with basic information about channel
 func (yt *YouTube) GetChannel() error {
-	log.SetPrefix("[YT CHANNEL] ")
-	defer log.SetPrefix("")
 	URL := yt.getChannelURL()
 	response, err := http.Get(URL)
 	if err != nil {
-		log.Fatal("Request ", err)
+		logger.Logger.Fatal("Request ", err)
 	}
 
 	content, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		log.Fatal("Read body ", err)
+		logger.Logger.Fatal("Read body ", err)
 	}
 	defer response.Body.Close()
 
@@ -162,7 +160,7 @@ func (yt *YouTube) GetChannel() error {
 	// Unify publishedAt time
 	publishedAt, err := time.Parse(time.RFC3339, yt.Channel.Snippet.PublishedAt)
 	if err != nil {
-		log.Fatal("Parse publishedAt ", err)
+		logger.Logger.Fatal("Parse publishedAt ", err)
 	}
 	yt.Channel.Snippet.PublishedAt = publishedAt.Format(time.RFC1123Z)
 	return nil
@@ -170,18 +168,15 @@ func (yt *YouTube) GetChannel() error {
 
 // GetVideos makes request to Google API and retreives last 15 videos snippets
 func (yt *YouTube) GetVideos() {
-	log.SetPrefix("[YT VIDEOS] ")
-	defer log.SetPrefix("")
-
 	URL := yt.getVideoURL()
 	response, err := http.Get(URL)
 	if err != nil {
-		log.Fatal("Request ", err)
+		logger.Logger.Fatal("Request ", err)
 	}
 
 	content, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		log.Fatal("Read body ", err)
+		logger.Logger.Fatal("Read body ", err)
 	}
 	defer response.Body.Close()
 
@@ -192,7 +187,7 @@ func (yt *YouTube) GetVideos() {
 	for i, v := range videos.Items {
 		pubAt, err := time.Parse(time.RFC3339, v.Snippet.PublishedAt)
 		if err != nil {
-			log.Fatal("Parse publishedAt ", err)
+			logger.Logger.Fatal("Parse publishedAt ", err)
 		}
 		videos.Items[i].Snippet.PublishedAt = pubAt.Format(time.RFC1123Z)
 	}
@@ -205,15 +200,15 @@ func (yt *YouTube) setChannelID(source, sourceType string) error {
 	case "channel":
 		yt.ID = source
 	case "channelUrl":
-		url, err := url.Parse(source)
+		parsedUrl, err := url.Parse(source)
 		if err != nil {
 			return err
 		}
-		split := strings.Split(url.Path, "/")
+		split := strings.Split(parsedUrl.Path, "/")
 		if len(split) < 3 {
 			return errors.New("Wrong URL")
 		}
-		channelID := split[2] // channelId from url
+		channelID := split[2] // channelId from parsedUrl
 		yt.ID = channelID
 	default:
 		return errors.New("Source type not supported")
@@ -222,20 +217,12 @@ func (yt *YouTube) setChannelID(source, sourceType string) error {
 }
 
 func init() {
-	var err error
-	videosURL, err = url.Parse(videos)
-	if err != nil {
-		log.Fatal("Can't parse video url")
-	}
-
-	channelURL, err = url.Parse(channel)
-	if err != nil {
-		log.Fatal("Can't parse channel url")
-	}
+	videosURL, _ = url.Parse(videos)
+	channelURL, _ = url.Parse(channel)
 }
 
-// Create makes new variable of type YouTube and gets all detaisls
-func Create(id, sourceType string) (YouTube, error) {
+// New makes new variable of type YouTube and gets all detaisls
+func New(id, sourceType string) (YouTube, error) {
 	yt := YouTube{}
 	yt.setChannelID(id, sourceType)
 	err := yt.GetChannel()
