@@ -2,13 +2,13 @@ package itunes
 
 import (
 	"encoding/xml"
-	"os"
 
 	"github.com/psmarcin/youtubeGoesPodcast/pkg/youtube"
 )
 
-var YOUTUBE_VIDEO = "https://www.youtube.com/watch?v="
-var YOUTUBE_CHANNEL = "https://www.youtube.com/channel/"
+var youtubeVideoBaseURL = "https://www.youtube.com/watch?v="
+var youtubeChannelBaseURL = "https://www.youtube.com/channel/"
+var ygpProxyBaseURL = "http://youtube-goes-podcast-proxy.herokuapp.com/"
 
 // Feed struct for JSON
 type Feed struct {
@@ -39,18 +39,14 @@ type Feed struct {
 
 // Item struct for JSON
 type Item struct {
-	GUID        string `xml:"guid"`
-	Title       string `xml:"title"`
-	Link        string `xml:"link"`
-	Description string `xml:"description"`
-	PubDate     string `xml:"pubDate"`
-	Enclosure   struct {
-		URL    string `xml:"url,attr"`
-		Type   string `xml:"type,attr"`
-		Length int    `xml:"length,attr"`
-	} `xml:"enclosure"`
-	Subtitle string `xml:"itunes:subtitle"`
-	Image    struct {
+	GUID        string    `xml:"guid"`
+	Title       string    `xml:"title"`
+	Link        string    `xml:"link"`
+	Description string    `xml:"description"`
+	PubDate     string    `xml:"pubDate"`
+	Enclosure   Enclosure `xml:"enclosure"`
+	Subtitle    string    `xml:"itunes:subtitle"`
+	Image       struct {
 		Href string `xml:"href,attr"`
 	} `xml:"itunes:image"`
 	Order    int    `xml:"itunes:order"`
@@ -58,6 +54,11 @@ type Item struct {
 	Summary  string `xml:"itunes:summary"`
 	Author   string `xml:"itunes:author"`
 	Duration int    `xml:"itunes:duration"`
+}
+type Enclosure struct {
+	URL    string `xml:"url,attr"`
+	Type   string `xml:"type,attr"`
+	Length int    `xml:"length,attr"`
 }
 
 // Owner struct
@@ -73,10 +74,9 @@ func (f *Feed) ToXML() []byte {
 
 // New return new Feed
 func New(yt youtube.YouTube) Feed {
-	videoLinkBase := os.Getenv("REMOTE_URL") + "/video/"
 	feed := Feed{
 		Title:         yt.Channel.Snippet.Title,
-		Link:          YOUTUBE_CHANNEL + yt.Channel.ID,
+		Link:          youtubeChannelBaseURL + yt.Channel.ID,
 		Description:   yt.Channel.Snippet.Description,
 		Category:      "TV &amp; Film",
 		Author:        yt.Channel.Snippet.Title,
@@ -89,15 +89,15 @@ func New(yt youtube.YouTube) Feed {
 	feed.ITunesCategory.Text = "TV &amp; Film"
 	feed.Image.URL = yt.Channel.Snippet.Thumbnails.High.URL
 	feed.Image.Title = yt.Channel.Snippet.Title
-	feed.Image.Link = YOUTUBE_CHANNEL + yt.Channel.ID
+	feed.Image.Link = youtubeChannelBaseURL + yt.Channel.ID
 	feed.ITunesImage.Href = yt.Channel.Snippet.Thumbnails.High.URL
 	var items []Item
 
 	for i, v := range yt.Videos {
 		item := Item{
-			GUID:        "http://podsync.net/download/UScq3fyKG/" + v.ID.VideoID + ".mp4",
+			GUID:        ygpProxyBaseURL + v.ID.VideoID,
 			Title:       v.Snippet.Title,
-			Link:        YOUTUBE_VIDEO + v.ID.VideoID,
+			Link:        youtubeVideoBaseURL + v.ID.VideoID,
 			Description: v.Snippet.Description,
 			PubDate:     v.Snippet.PublishedAt,
 			Subtitle:    v.Snippet.Title,
@@ -105,14 +105,14 @@ func New(yt youtube.YouTube) Feed {
 			ITitle:      v.Snippet.Title,
 			Summary:     v.Snippet.Description,
 			Author:      yt.Channel.Snippet.Title,
+			Enclosure: Enclosure{
+				URL:    ygpProxyBaseURL + v.ID.VideoID,
+				Type:   "audio/mp3",
+				Length: v.Length,
+			},
 		}
 		item.Image.Href = "https://i.ytimg.com/vi/" + v.ID.VideoID + "/maxresdefault.jpg"
-
-		item.Enclosure.URL = videoLinkBase + v.ID.VideoID
-		item.Enclosure.Type = "audio/mp3"
-		item.Enclosure.Length = 1
-		item.Duration = 1
-
+		item.Duration = v.Length
 		items = append(items, item)
 	}
 	feed.Item = items

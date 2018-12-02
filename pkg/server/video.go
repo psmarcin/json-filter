@@ -65,16 +65,16 @@ func setHeaders(src, dest http.Header) {
 	}
 }
 
-func streamVideo(url string, header http.Header, w http.ResponseWriter, method string) error {
-	req, err := http.NewRequest(method, url, nil)
-	checkError(err, w)
+func streamVideo(url string, header http.Header, w http.ResponseWriter, r *http.Request) error {
+	req, err := http.NewRequest(r.Method, url, nil)
+	checkError(err, w, r)
 
 	// set request header
 	setHeaders(header, req.Header)
 
 	client := &http.Client{Timeout: time.Second * 10}
 	resp, err := client.Do(req)
-	checkError(err, w)
+	checkError(err, w, r)
 
 	// set respoinse header
 	setHeaders(resp.Header, w.Header())

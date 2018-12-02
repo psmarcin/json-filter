@@ -28,14 +28,14 @@ var rootStatus = status{
 	StartedAt: time.Now(),
 }
 
-func checkError(e error, w http.ResponseWriter) {
+func checkError(e error, w http.ResponseWriter, r *http.Request) {
 	if e != nil {
-		errorResponse(e, w)
+		errorResponse(e, w, r)
 		return
 	}
 }
 
-func errorResponse(e error, w http.ResponseWriter) {
+func errorResponse(e error, w http.ResponseWriter, r *http.Request) {
 	err := jsonError{
 		IsError:      true,
 		Timestamp:    time.Now(),
@@ -51,14 +51,12 @@ func errorResponse(e error, w http.ResponseWriter) {
 func jsonResponse(b []byte, w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json")
 	s := string(b)
-	logger.Logger.Printf("Response  %v", s)
 	fmt.Fprintf(w, s)
 }
 
 func xmlResponse(b []byte, w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/rss+xml; charset=UTF-8")
-	s := `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd">
+	s := `<rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd">
 ` + string(b) + `
 </rss>`
 	fmt.Fprintf(w, s)
