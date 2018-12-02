@@ -30,7 +30,7 @@ func Start() {
 	router.HandleFunc("/stats", prometheus.InstrumentHandlerFunc("/stats", statsHandler)).Methods(http.MethodGet)
 	router.Handle("/metrics", prometheus.InstrumentHandler("/metrics", promhttp.Handler())).Methods(http.MethodGet)
 	// feed
-	router.HandleFunc("/feed/{sourceType}/{source}", prometheus.InstrumentHandlerFunc("/feed", feedHandler)).Methods(http.MethodGet)
+	router.HandleFunc("/feed/{sourceType}/{source}", prometheus.InstrumentHandlerFunc("/feed/{sourceType}/{source}", feedHandler)).Methods(http.MethodGet)
 	// video
 	router.HandleFunc("/video/{videoId}", prometheus.InstrumentHandlerFunc("/video/{videoId}", videoHandler)).Methods(http.MethodGet)
 	router.HandleFunc("/video/{videoId}", prometheus.InstrumentHandlerFunc("/video/{videoId}", videoHandler)).Methods(http.MethodHead)

@@ -62,8 +62,6 @@ func videoHandler(w http.ResponseWriter, r *http.Request) {
 		checkError(e, w, r)
 	}
 
-	// logger.Logger.Printf("Request URL %s", videoURL.RequestURI())
-
 	err = streamVideo(videoURL.String(), r.Header, w, r)
 	checkError(err, w, r)
 }
