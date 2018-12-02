@@ -27,3 +27,8 @@ Please keep in mind that this is my side project. I want to learn Go language pr
 There are no additional dependency except `go`. 
 
 First please put env variable that you can find in `now.js` into `.env` file and then just run `go run main.go` and you are good to go. 
+
+#### Docker
+
+1. `docker-compose up`
+1. `GET localhost:8080` 
