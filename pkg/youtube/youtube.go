@@ -17,6 +17,7 @@ var youtubeChannelHttp = "http://www.youtube.com/channel/"
 var youtubeChannelHttps = "https://www.youtube.com/channel/"
 var channel = "https://www.googleapis.com/youtube/v3/channels"
 var videos = "https://www.googleapis.com/youtube/v3/search"
+var videoDetailsUrl = "https://www.googleapis.com/youtube/v3/videos"
 var channelURL *url.URL
 var videosURL *url.URL
 
@@ -120,17 +121,17 @@ type Video struct {
 		ChannelTitle         string `json:"channelTitle"`
 		LiveBroadcastContent string `json:"liveBroadcastContent"`
 	} `json:"snippet"`
+	Length int `json:"length"`
 }
 
-func (yt *YouTube) getVideoURL() string {
-	query := url.Values{}
-	query.Add("key", os.Getenv("PS_GOOGLE_API"))
-	query.Add("part", "snippet")
-	query.Add("channelId", yt.Channel.ID)
-	query.Add("maxResults", "25")
-	query.Add("order", "date")
-	query.Add("q", yt.params.search)
-	return videosURL.String() + "?" + query.Encode()
+func (d *videoDetailsResponse) findById(id string) (videoDetails, error) {
+	for _, v := range d.Items {
+		if v.ID == id {
+			return v, nil
+			break
+		}
+	}
+	return videoDetails{}, errors.New("Details not found")
 }
 
 func (yt *YouTube) getChannelURL() string {
@@ -169,37 +170,8 @@ func (yt *YouTube) GetChannel() error {
 	if err != nil {
 		logger.Logger.Fatal("Parse publishedAt ", err)
 	}
-	yt.Channel.Snippet.PublishedAt = publishedAt.Format(time.RFC1123Z)
+	yt.Channel.Snippet.PublishedAt = publishedAt.Format(time.RFC822)
 	return nil
-}
-
-// GetVideos makes request to Google API and retreives last 15 videos snippets
-func (yt *YouTube) GetVideos() {
-	URL := yt.getVideoURL()
-	response, err := http.Get(URL)
-	if err != nil {
-		logger.Logger.Fatal("Request ", err)
-	}
-
-	content, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		logger.Logger.Fatal("Read body ", err)
-	}
-	defer response.Body.Close()
-
-	var videos videoResponse
-	json.Unmarshal(content, &videos)
-
-	// Unify publishedAt time
-	for i, v := range videos.Items {
-		pubAt, err := time.Parse(time.RFC3339, v.Snippet.PublishedAt)
-		if err != nil {
-			logger.Logger.Fatal("Parse publishedAt ", err)
-		}
-		videos.Items[i].Snippet.PublishedAt = pubAt.Format(time.RFC1123Z)
-	}
-
-	yt.Videos = videos.Items
 }
 
 func (yt *YouTube) setChannelID(source, sourceType string) error {
