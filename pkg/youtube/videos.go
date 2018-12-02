@@ -97,6 +97,9 @@ func (yt *YouTube) getVideoDetails() error {
 		details, _ := videosDetailsResp.findById(v.ID.VideoID)
 		trimmed := strings.Trim(details.ContentDetails.Duration, "PT")
 		parsed := strings.ToLower(trimmed)
+		if parsed == "" {
+			continue
+		}
 		l, err := time.ParseDuration(parsed)
 		if err != nil {
 			logger.Logger.Printf("Can't parse duration %s", err)
