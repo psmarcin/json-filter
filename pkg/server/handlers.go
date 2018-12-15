@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
-	"strings"
 
 	"github.com/psmarcin/youtubeGoesPodcast/pkg/logger"
 
@@ -22,7 +21,7 @@ func feedHandler(w http.ResponseWriter, r *http.Request) {
 	parameters := mux.Vars(r)
 	r.ParseForm()
 	querySearch := r.FormValue("search")
-	contentType := r.Header.Get("accept")
+	// contentType := r.Header.Get("accept")
 	source := string(parameters["source"])
 	sourceType := string(parameters["sourceType"])
 
@@ -36,11 +35,11 @@ func feedHandler(w http.ResponseWriter, r *http.Request) {
 	youtubeFeed, err := youtube.New(source, sourceType, querySearch)
 	checkError(err, w, r)
 	iTunesFeed := itunes.New(youtubeFeed)
-	if strings.Contains(contentType, "text/html") {
-		logger.Logger.Print("Response HTML")
-		htmlFeedResponse(iTunesFeed, w)
-		return
-	}
+	// if strings.Contains(contentType, "text/html") {
+	// 	logger.Logger.Print("Response HTML")
+	// 	htmlFeedResponse(iTunesFeed, w)
+	// 	return
+	// }
 	xmlResponse(iTunesFeed.ToXML(), w)
 }
 
