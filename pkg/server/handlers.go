@@ -21,11 +21,11 @@ func feedHandler(w http.ResponseWriter, r *http.Request) {
 	parameters := mux.Vars(r)
 	r.ParseForm()
 	querySearch := r.FormValue("search")
-	// contentType := r.Header.Get("accept")
+	contentType := r.Header.Get("accept")
 	source := string(parameters["source"])
 	sourceType := string(parameters["sourceType"])
 
-	logger.Logger.Printf("%s %s %s %s %s", r.Method, r.URL.RequestURI(), r.UserAgent(), source, sourceType)
+	logger.Logger.Printf("%s %s %s %s %s %s", r.Method, r.URL.RequestURI(), r.UserAgent(), source, sourceType, contentType)
 	if sourceType == "" || source == "" {
 		err := errors.New("You need to provide source type and value")
 		errorResponse(err, w, r)
