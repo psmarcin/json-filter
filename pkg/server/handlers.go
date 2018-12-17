@@ -51,7 +51,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 func videoHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	logger.Logger.Print("Get ", vars["videoId"], " ", r.Header)
+	logger.Logger.Printf("Get video %s with header %s ", vars["videoId"], r.Header)
 
 	videoURL, err := getVideoURL(vars["videoId"])
 	checkError(err, w, r)

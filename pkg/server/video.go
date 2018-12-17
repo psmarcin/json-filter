@@ -13,18 +13,18 @@ import (
 // SOURCES are itag streams that we support, order count
 var SOURCES = []interface{}{"139", "140", "141", "256", "258", "325", "328", "171", "172", "249", "250", "251", "5"}
 var HEADER_FIELDS = []string{
-	"Content-Length",
-	"X-Content-Type-Options",
-	"Last-Modified",
+	"Accept-Ranges",
 	"Cache-Control",
 	"Connection",
+	"Content-Length",
+	"Content-Range",
 	"Content-Type",
 	"Date",
 	"Expires",
-	"Accept-Ranges",
-	"Content-Range",
+	"Last-Modified",
 	"Range",
 	"User-Agent",
+	"X-Content-Type-Options",
 }
 
 func getVideoURL(videoID string) (*url.URL, error) {

@@ -89,7 +89,7 @@ func New(yt youtube.YouTube) Feed {
 	feed.ITunesCategory.Text = "TV &amp; Film"
 	feed.Image.URL = yt.Channel.Snippet.Thumbnails.High.URL
 	feed.Image.Title = yt.Channel.Snippet.Title
-	feed.Image.Link = youtubeChannelBaseURL + yt.Channel.ID
+	feed.Image.Link = yt.Channel.Snippet.Thumbnails.High.URL
 	feed.ITunesImage.Href = yt.Channel.Snippet.Thumbnails.High.URL
 	var items []Item
 
